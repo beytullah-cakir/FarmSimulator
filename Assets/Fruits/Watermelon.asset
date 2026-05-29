@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e10d7aae28aa2be4d88455b36fd6616b, type: 3}
+  m_Name: Watermelon
+  m_EditorClassIdentifier: Assembly-CSharp::FruitData
+  fruitName: Watermelon
+  basePrice: 10
+  fruitPrefab: {fileID: 891772234063362907, guid: a1f5656f666c7b44790a1e923f4542c8, type: 3}
+  fruitIcon: {fileID: 4727633781103762509, guid: 45ab094653c66ba40a2ca337adf32ff4, type: 3}

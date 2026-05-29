@@ -18,7 +18,10 @@ public class Tree : MonoBehaviour
     private void Awake()
     {
         currentPrice = fruitData.BasePrice;
-
+        if (currentAmount == 0 && maxAmount > 0)
+        {
+            currentAmount = maxAmount;
+        }
     }
 
 

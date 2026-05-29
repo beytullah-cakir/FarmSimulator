@@ -104,6 +104,15 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.polybrush": {
+      "version": "file:com.unity.polybrush",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.settings-manager": "2.0.1",
+        "com.unity.modules.imgui": "1.0.0"
+      }
+    },
     "com.unity.render-pipelines.core": {
       "version": "17.3.0",
       "depth": 1,

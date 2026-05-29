@@ -18,6 +18,8 @@ public class PlayerInventory : MonoBehaviour
     public int CurrentCarryCount => currentCarryCount;
     public List<CarriedItem> CarriedItems => carriedItems;
 
+    public event System.Action OnInventoryChanged;
+
     [System.Serializable]
     public class CarriedItem
     {
@@ -62,6 +64,7 @@ public class PlayerInventory : MonoBehaviour
             }
 
             currentCarryCount += amountToAdd;
+            OnInventoryChanged?.Invoke();
         }
 
         return amountToAdd;
@@ -82,6 +85,7 @@ public class PlayerInventory : MonoBehaviour
             {
                 carriedItems.Remove(item);
             }
+            OnInventoryChanged?.Invoke();
             return true;
         }
 
@@ -92,6 +96,7 @@ public class PlayerInventory : MonoBehaviour
     {
         carriedItems.Clear();
         currentCarryCount = 0;
+        OnInventoryChanged?.Invoke();
     }
 
     public void UpgradeCapacity(int capacityIncrease)

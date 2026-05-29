@@ -89,4 +89,24 @@ public class PlayerController : MonoBehaviour
         bool isRunning = inputDirection.magnitude >= 0.1f;
         animator.SetBool(runHash, isRunning);
     }
+
+    /// <summary>
+    /// Safely enables or disables player input/movement, resetting velocity and running animations.
+    /// </summary>
+    public void SetInputActive(bool active)
+    {
+        enabled = active;
+        if (!active)
+        {
+            inputDirection = Vector3.zero;
+            if (rb != null)
+            {
+                rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
+            }
+            if (animator != null)
+            {
+                animator.SetBool(runHash, false);
+            }
+        }
+    }
 }
