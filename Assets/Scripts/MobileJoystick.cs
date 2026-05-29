@@ -1,19 +1,54 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+public class JoystickTouchZone : Image
+{
+    private MobileJoystick joystick;
+
+    public void Setup(MobileJoystick owner)
+    {
+        joystick = owner;
+        color = new Color(0f, 0f, 0f, 0f);
+        raycastTarget = true;
+    }
+
+    public override bool IsRaycastLocationValid(Vector2 screenPoint, Camera eventCamera)
+    {
+        if (EventSystem.current == null) return true;
+
+        raycastTarget = false;
+
+        PointerEventData eventData = new PointerEventData(EventSystem.current);
+        eventData.position = screenPoint;
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+
+        raycastTarget = true;
+
+        foreach (var result in results)
+        {
+            if (result.gameObject != gameObject &&
+                (joystick == null || (!result.gameObject.transform.IsChildOf(joystick.transform) && result.gameObject != joystick.gameObject)))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+}
 
 public class MobileJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
     public static MobileJoystick Instance { get; private set; }
 
     [Header("Joystick UI Elements")]
-    [Tooltip("The outer ring/background of the joystick (should be a child GameObject of the Canvas).")]
     [SerializeField] private RectTransform background;
-
-    [Tooltip("The inner knob/handle of the joystick.")]
     [SerializeField] private RectTransform handle;
 
     [Header("Settings")]
-    [Tooltip("Maximum distance the handle can be dragged away from the center (in pixels).")]
     [SerializeField] private float dragRange = 100f;
 
     private Canvas canvas;
@@ -23,7 +58,6 @@ public class MobileJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, 
 
     private void Awake()
     {
-        // Setup Singleton instance
         if (Instance == null)
         {
             Instance = this;
@@ -44,22 +78,27 @@ public class MobileJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, 
             uiCamera = canvas.worldCamera;
         }
 
-        // Ensure the GameObject has a Graphic component to capture touch raycasts
-        UnityEngine.UI.Graphic graphic = GetComponent<UnityEngine.UI.Graphic>();
-        if (graphic == null)
+        Graphic graphic = GetComponent<Graphic>();
+        if (graphic != null && !(graphic is JoystickTouchZone))
         {
-            // Automatically add a transparent Image to capture touch events without visual footprint
-            UnityEngine.UI.Image image = gameObject.AddComponent<UnityEngine.UI.Image>();
-            image.color = new Color(0f, 0f, 0f, 0f); // Fully transparent
-            image.raycastTarget = true;
-            Debug.Log("MobileJoystick: Automatically added an invisible Image component to capture touches.");
+            if (graphic is Image)
+            {
+                Color oldColor = ((Image)graphic).color;
+                Sprite oldSprite = ((Image)graphic).sprite;
+                DestroyImmediate(graphic);
+
+                JoystickTouchZone touchZone = gameObject.AddComponent<JoystickTouchZone>();
+                touchZone.Setup(this);
+                touchZone.color = oldColor;
+                touchZone.sprite = oldSprite;
+            }
         }
-        else
+        else if (graphic == null)
         {
-            graphic.raycastTarget = true;
+            JoystickTouchZone touchZone = gameObject.AddComponent<JoystickTouchZone>();
+            touchZone.Setup(this);
         }
 
-        // Hide the joystick visual initially
         if (background != null)
         {
             background.gameObject.SetActive(false);
@@ -70,8 +109,6 @@ public class MobileJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, 
     {
         if (background == null || handle == null) return;
 
-        // Position the background at the exact touch location using world coordinates
-        // This is extremely robust and ignores background anchors/pivots
         Vector3 worldPoint;
         if (RectTransformUtility.ScreenPointToWorldPointInRectangle(
             background.parent as RectTransform,
@@ -91,7 +128,6 @@ public class MobileJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, 
     {
         if (background == null || handle == null || !background.gameObject.activeSelf) return;
 
-        // Convert pointer position to a local position relative to the joystick background center
         Vector2 localPoint;
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
             background,
@@ -103,18 +139,15 @@ public class MobileJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, 
             float distance = localPoint.magnitude;
             Vector2 direction = localPoint.normalized;
 
-            // Clamp handle position within the dragRange boundary
             float clampedDistance = Mathf.Min(distance, dragRange);
             handle.anchoredPosition = direction * clampedDistance;
 
-            // Update direction vector normalized between 0 and 1
             InputDirection = direction * (clampedDistance / dragRange);
         }
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        // Reset input and hide the joystick visual on release
         InputDirection = Vector2.zero;
         if (handle != null)
         {

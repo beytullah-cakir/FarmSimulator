@@ -4,33 +4,24 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [Tooltip("Movement speed of the character.")]
     [SerializeField] private float moveSpeed = 5f;
-
-    [Tooltip("How fast the character turns to face the movement direction.")]
     [SerializeField] private float rotationSpeed = 10f;
 
     [Header("Animation Settings")]
-    [Tooltip("Animator component for character animations. If null, will try to find in children.")]
     [SerializeField] private Animator animator;
 
     private Rigidbody rb;
     private PlayerInputActions playerInputActions;
     private Vector3 inputDirection;
 
-    // Animator Boolean Parameter Hash for performance
     private readonly int runHash = Animator.StringToHash("Run");
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        
-        // Freeze all rotations on the Rigidbody so physical collisions do not spin or tilt the character
         rb.constraints = RigidbodyConstraints.FreezeRotation;
-
         playerInputActions = new PlayerInputActions();
 
-        // Automatically search for Animator in children if not assigned (common for 3D FBX models)
         if (animator == null)
         {
             animator = GetComponentInChildren<Animator>();
@@ -51,13 +42,27 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 inputVector = playerInputActions.Player.Move.ReadValue<Vector2>();
 
-        // If virtual touch joystick is active and receives touch input, override PC keyboard/mouse controls
         if (MobileJoystick.Instance != null && MobileJoystick.Instance.InputDirection.sqrMagnitude > 0.001f)
         {
             inputVector = MobileJoystick.Instance.InputDirection;
         }
 
-        inputDirection = new Vector3(inputVector.x, 0f, inputVector.y).normalized;
+        if (Camera.main != null)
+        {
+            Vector3 forward = Camera.main.transform.forward;
+            Vector3 right = Camera.main.transform.right;
+
+            forward.y = 0f;
+            right.y = 0f;
+            forward.Normalize();
+            right.Normalize();
+
+            inputDirection = (forward * inputVector.y + right * inputVector.x).normalized;
+        }
+        else
+        {
+            inputDirection = new Vector3(inputVector.x, 0f, inputVector.y).normalized;
+        }
 
         MoveCharacter();
         UpdateAnimationState();
@@ -75,8 +80,7 @@ public class PlayerController : MonoBehaviour
             Vector3 movement = inputDirection * moveSpeed * Time.deltaTime;
             transform.position += new Vector3(movement.x, 0f, movement.z);
 
-            // Binds rotation to -inputDirection to respect model import orientation
-            Quaternion targetRotation = Quaternion.LookRotation(-inputDirection);
+            Quaternion targetRotation = Quaternion.LookRotation(inputDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
     }
@@ -85,14 +89,10 @@ public class PlayerController : MonoBehaviour
     {
         if (animator == null) return;
 
-        // Set the Animator Boolean "Run" parameter based on character movement
         bool isRunning = inputDirection.magnitude >= 0.1f;
         animator.SetBool(runHash, isRunning);
     }
 
-    /// <summary>
-    /// Safely enables or disables player input/movement, resetting velocity and running animations.
-    /// </summary>
     public void SetInputActive(bool active)
     {
         enabled = active;
