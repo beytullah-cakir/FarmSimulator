@@ -19,6 +19,19 @@ public class UIManager : MonoBehaviour
     [Tooltip("The settings panel overlay.")]
     [SerializeField] private GameObject settingsPanel;
 
+    [System.Serializable]
+    public class FruitLevelUI
+    {
+        [Tooltip("The FruitData asset reference.")]
+        public FruitData fruit;
+
+        [Tooltip("The TextMeshProUGUI component to display the level.")]
+        public TextMeshProUGUI levelText;
+    }
+
+    [Header("Fruit Level UI References")]
+    [Tooltip("List of fruit levels and their corresponding TextMeshPro display elements.")]
+    [SerializeField] private System.Collections.Generic.List<FruitLevelUI> fruitLevelUIs = new System.Collections.Generic.List<FruitLevelUI>();
     private void Awake()
     {
         // Singleton initialization
@@ -49,6 +62,9 @@ public class UIManager : MonoBehaviour
             // Set initial money display
             UpdateMoneyDisplay(GameManager.Instance.PlayerMoney);
         }
+
+        // Initialize fruit level texts
+        UpdateFruitLevelsDisplay();
 
         // Ensure panels start in their correct default state
         InitializeUI();
@@ -122,4 +138,30 @@ public class UIManager : MonoBehaviour
             moneyText.text = currentMoney.ToString();
         }
     }
-}
+
+    /// <summary>
+    /// Updates the text display for all fruit level text components.
+    /// </summary>
+    public void UpdateFruitLevelsDisplay()
+    {
+        foreach (var fruitUI in fruitLevelUIs)
+        {
+            if (fruitUI != null && fruitUI.fruit != null && fruitUI.levelText != null)
+            {
+                fruitUI.levelText.text = "Lvl " + fruitUI.fruit.Level;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Upgrades the level of a specific fruit and updates the level display.
+    /// </summary>
+    /// <param name="fruit">The FruitData to upgrade.</param>
+    public void UpgradeFruitLevel(FruitData fruit)
+    {
+        if (fruit != null)
+        {
+            fruit.UpgradeLevel();
+            UpdateFruitLevelsDisplay();
+        }
+    }}
