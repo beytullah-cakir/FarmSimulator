@@ -2503,6 +2503,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 72c3880aa9165ab4da9cb0656012807f, type: 3}
+--- !u!114 &303359847 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6950067211672427840, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+  m_PrefabInstance: {fileID: 872316350}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!4 &306573980 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1601331577252723549, guid: b214a049616de1a4badde43d2a617311, type: 3}
@@ -3671,6 +3682,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1669781109300623314, guid: e41f2185f1c11a8409ff3cd219f789a1, type: 3}
   m_PrefabInstance: {fileID: 421126128}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &430942179 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6475887936910867305, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+  m_PrefabInstance: {fileID: 872316350}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &434237277
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3823,6 +3845,10 @@ PrefabInstance:
       propertyPath: fruitIncomeText
       value: 
       objectReference: {fileID: 872316353}
+    - target: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
+      propertyPath: treePurchaseCost
+      value: 700
+      objectReference: {fileID: 0}
     - target: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
       propertyPath: harvestDurationText
       value: 
@@ -4796,12 +4822,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
   moneyText: {fileID: 516474432}
-  gameplayPanel: {fileID: 0}
-  pausePanel: {fileID: 0}
-  settingsPanel: {fileID: 0}
-  fruitLevelUIs:
-  - fruit: {fileID: 11400000, guid: a6d7e6e5ddd106549b2d233aea907394, type: 2}
-    levelText: {fileID: 894731946}
+  harvestDurationText: {fileID: 872316351}
+  fruitIncomeText: {fileID: 872316353}
+  incomeCostText: {fileID: 872316354}
+  speedCostText: {fileID: 872316352}
+  buyTreeCostText: {fileID: 1643570778}
+  incomeLevelText: {fileID: 430942179}
+  speedLevelText: {fileID: 303359847}
+  treeLevelText: {fileID: 0}
+  unlockZoneUIs:
+  - fruit: {fileID: 11400000, guid: b8d3d198f6adba645a02157f6ad2332a, type: 2}
+    costText: {fileID: 1840637355}
+    paymentSlider: {fileID: 3968752396217712539}
 --- !u!4 &520107109
 Transform:
   m_ObjectHideFlags: 0
@@ -6275,9 +6307,21 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
+      propertyPath: currentIncome
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
+      propertyPath: treePurchaseCost
+      value: 1500
+      objectReference: {fileID: 0}
+    - target: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
       propertyPath: upgradeButtonObject
       value: 
       objectReference: {fileID: 1663067159}
+    - target: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
+      propertyPath: currentHarvestDuration
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
       propertyPath: targetTrees.Array.size
       value: 4
@@ -7035,66 +7079,38 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 447520860148076691, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 447520860148076691, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 447520860148076691, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 350
+      objectReference: {fileID: 0}
+    - target: {fileID: 447520860148076691, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -667.52
+      objectReference: {fileID: 0}
+    - target: {fileID: 843714560504030432, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1129509129}
     - target: {fileID: 2186925235122530514, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2241505929815467230, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2241505929815467230, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2241505929815467230, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1198828833}
-    - target: {fileID: 2241505929815467230, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2241505929815467230, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: UpgradeHarvestSpeed
-      objectReference: {fileID: 0}
-    - target: {fileID: 2241505929815467230, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: HarvestZone, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 2241505929815467230, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 4506309017872271205, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4506309017872271205, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4506309017872271205, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1198828833}
     - target: {fileID: 4506309017872271205, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4506309017872271205, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: UpgradeIncome
-      objectReference: {fileID: 0}
-    - target: {fileID: 4506309017872271205, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: HarvestZone, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 4506309017872271205, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1198828833}
     - target: {fileID: 4687163174178605330, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -7175,10 +7191,46 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8474371198171459046, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-      propertyPath: m_text
-      value: 15s->9.5s
+    - target: {fileID: 5275894263643913834, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5275894263643913834, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5275894263643913834, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 350
+      objectReference: {fileID: 0}
+    - target: {fileID: 5275894263643913834, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -133.504
+      objectReference: {fileID: 0}
+    - target: {fileID: 5494770092489836629, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1129509129}
+    - target: {fileID: 6483492886410401591, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6483492886410401591, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6483492886410401591, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 350
+      objectReference: {fileID: 0}
+    - target: {fileID: 6483492886410401591, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -400.512
+      objectReference: {fileID: 0}
+    - target: {fileID: 6680831739816174960, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1129509129}
     - target: {fileID: 9158485278274918248, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
       propertyPath: m_Name
       value: UI
@@ -7302,6 +7354,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1609786494}
     m_Modifications:
+    - target: {fileID: 975966968143014978, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 975966968143014978, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 975966968143014978, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2247419555065385077, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_FillAmount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2696954866570080560, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_Name
+      value: UnlockCarrot
+      objectReference: {fileID: 0}
     - target: {fileID: 5813225334983620098, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
       propertyPath: m_Name
       value: UnlockZone_Carrot
@@ -7414,22 +7486,15 @@ PrefabInstance:
       propertyPath: mainCinemachineCamera
       value: 
       objectReference: {fileID: 393443477}
+    - target: {fileID: 9167812805345373482, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
---- !u!114 &894731946 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 364983063573855435, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-  m_PrefabInstance: {fileID: 872316350}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &896084437
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15669,6 +15734,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 12117dade10afc44babaa7859bf5a8cb, type: 3}
+--- !u!1 &1129509129 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2186925235122530514, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+  m_PrefabInstance: {fileID: 872316350}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1157523908
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19146,6 +19216,17 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!114 &1643570778 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8653870778000774621, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+  m_PrefabInstance: {fileID: 872316350}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &1645436979
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21314,6 +21395,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dd1314451e232934d84f9c1f0afb2806, type: 3}
+--- !u!114 &1840637355 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4953535311659464417, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+  m_PrefabInstance: {fileID: 3968752396217712538}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &1846643501
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21870,6 +21962,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1609786494}
     m_Modifications:
+    - target: {fileID: 975966968143014978, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 975966968143014978, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 975966968143014978, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2247419555065385077, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_FillAmount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2696954866570080560, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_Name
+      value: UnlockWatermelon
+      objectReference: {fileID: 0}
     - target: {fileID: 5813225334983620098, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
       propertyPath: m_Name
       value: UnlockZone_Watermelon
@@ -21982,6 +22094,10 @@ PrefabInstance:
       propertyPath: mainCinemachineCamera
       value: 
       objectReference: {fileID: 393443477}
+    - target: {fileID: 9167812805345373482, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -23197,6 +23313,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1609786494}
     m_Modifications:
+    - target: {fileID: 975966968143014978, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 975966968143014978, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 975966968143014978, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2247419555065385077, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_FillAmount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2696954866570080560, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_Name
+      value: UnlockOrange
+      objectReference: {fileID: 0}
     - target: {fileID: 5813225334983620098, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
       propertyPath: m_Name
       value: UnlockZone_Orange
@@ -23309,11 +23445,26 @@ PrefabInstance:
       propertyPath: mainCinemachineCamera
       value: 
       objectReference: {fileID: 393443477}
+    - target: {fileID: 9167812805345373482, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+--- !u!114 &3968752396217712539 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1772797793406544201, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+  m_PrefabInstance: {fileID: 3968752396217712538}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1001 &6030182389655175565
 PrefabInstance:
   m_ObjectHideFlags: 0

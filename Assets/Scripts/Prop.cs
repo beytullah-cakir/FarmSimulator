@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Tree : MonoBehaviour
+public class Prop : MonoBehaviour
 {
     [SerializeField] private FruitData fruitData;
 

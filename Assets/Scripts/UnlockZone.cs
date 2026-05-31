@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using Unity.Cinemachine;
@@ -26,9 +27,16 @@ public class UnlockZone : MonoBehaviour
 
     [SerializeField] private int transferAmountPerTick = 5;
 
-    [SerializeField] private TextMeshProUGUI costText;
+    // (UI references are now managed by UIManager)
 
     [SerializeField] private Canvas overheadCanvas;
+
+    [Header("Para Animasyonu")]
+    [Tooltip("Inspector'dan atanacak para prefab'ı.")]
+    [SerializeField] private GameObject moneyPrefab;
+
+    [SerializeField] private float moneyArcHeight = 3f;
+    [SerializeField] private float moneyFlightDuration = 0.4f;
 
     private Coroutine transferCoroutine;
     private PlayerController activePlayer;
@@ -37,28 +45,33 @@ public class UnlockZone : MonoBehaviour
 
     private void Awake()
     {
-        costText = GetComponentInChildren<TextMeshProUGUI>(true);
-        overheadCanvas = GetComponentInChildren<Canvas>(true);
+        if (overheadCanvas == null)
+            overheadCanvas = GetComponentInChildren<Canvas>(true);
+    }
+
+    private void Start()
+    {
         UpdateCostUI();
     }
 
-
     private void OnTriggerEnter(Collider other)
     {
-
         PlayerController player = other.GetComponent<PlayerController>();
         activePlayer = player;
         isPlayerInside = true;
+        UpdateCostUI(); // Update UI instantly on entry
         transferCoroutine = StartCoroutine(TransferMoneyRoutine());
     }
 
     private void OnTriggerExit(Collider other)
     {
-
         activePlayer = null;
         isPlayerInside = false;
-        StopCoroutine(transferCoroutine);
-        transferCoroutine = null;
+        if (transferCoroutine != null)
+        {
+            StopCoroutine(transferCoroutine);
+            transferCoroutine = null;
+        }
     }
 
     private IEnumerator TransferMoneyRoutine()
@@ -74,6 +87,12 @@ public class UnlockZone : MonoBehaviour
                 GameManager.Instance.RemoveMoney(transferAmount);
                 currentInvestedMoney += transferAmount;
                 UpdateCostUI();
+
+                // Para animasyonunu başlat (fire-and-forget)
+                if (moneyPrefab != null && activePlayer != null)
+                {
+                    StartCoroutine(SpawnMoneyProjectile(activePlayer.transform.position));
+                }
             }
 
             if (currentInvestedMoney >= requiredMoney)
@@ -86,20 +105,69 @@ public class UnlockZone : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Para objesini oyuncudan UnlockZone merkezine parabolik yay ile fırlatır.
+    /// </summary>
+    private IEnumerator SpawnMoneyProjectile(Vector3 spawnWorldPos)
+    {
+        GameObject moneyObj = Instantiate(moneyPrefab, spawnWorldPos + Vector3.up * 1f, Quaternion.identity);
+
+        // Fizik/collider'ı devre dışı bırak
+        Collider col = moneyObj.GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        Rigidbody rb = moneyObj.GetComponent<Rigidbody>();
+        if (rb != null) rb.isKinematic = true;
+
+        Vector3 startPos = moneyObj.transform.position;
+        Vector3 targetPos = transform.position + Vector3.up * 1f;
+
+        float elapsed = 0f;
+
+        while (elapsed < moneyFlightDuration)
+        {
+            if (moneyObj == null) yield break;
+
+            elapsed += Time.deltaTime;
+            float t = elapsed / moneyFlightDuration;
+
+            // Parabolik hareket: yatay lerp + dikey sin eğrisi
+            Vector3 pos = Vector3.Lerp(startPos, targetPos, t);
+            pos.y += Mathf.Sin(t * Mathf.PI) * moneyArcHeight;
+
+            moneyObj.transform.position = pos;
+
+            // Hafif rotasyon efekti
+            moneyObj.transform.rotation = Quaternion.Euler(0f, t * 360f, t * 180f);
+
+            // Hedefe yaklaştıkça küçül
+            float scale = Mathf.Lerp(1f, 0f, Mathf.Pow(t, 2f));
+            moneyObj.transform.localScale = Vector3.one * scale;
+
+            yield return null;
+        }
+
+        if (moneyObj != null)
+            Destroy(moneyObj);
+    }
+
     private void UpdateCostUI()
     {
         int remainingCost = Mathf.Max(0, requiredMoney - currentInvestedMoney);
-        costText.text = remainingCost.ToString();
+        float fillAmount = (float)currentInvestedMoney / requiredMoney;
+
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.UpdateUnlockUI(fruitToUnlock, remainingCost, fillAmount);
+        }
     }
 
     private void UnlockArea()
     {
-
         overheadCanvas.enabled = false;
         GameManager.Instance.SetFruitActive(fruitToUnlock, true);
 
         Transform targetFocus = objectToActivate.transform.GetChild(0);
-
 
         SetCameraTarget(targetFocus);
         activePlayer.SetInputActive(false);

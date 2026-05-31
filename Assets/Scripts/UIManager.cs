@@ -1,73 +1,51 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class UIManager : MonoBehaviour
 {
-    public static UIManager Instance { get; private set; }
+    public static UIManager Instance;
 
     [Header("Money UI References (TextMesh Pro Only)")]
-    [Tooltip("The TextMeshProUGUI component to display the money. If left blank, it will try to find one in children.")]
     [SerializeField] private TextMeshProUGUI moneyText;
 
-    [Header("Screen Panels")]
-    [Tooltip("The main gameplay UI overlay panel.")]
-    [SerializeField] private GameObject gameplayPanel;
+    [Header("Harvest Zone Upgrade UI References")]
+    [SerializeField] private TextMeshProUGUI harvestDurationText;
+    [SerializeField] private TextMeshProUGUI fruitIncomeText;
+    [SerializeField] private TextMeshProUGUI incomeCostText;
+    [SerializeField] private TextMeshProUGUI speedCostText;
+    [SerializeField] private TextMeshProUGUI buyTreeCostText;
 
-    [Tooltip("The pause menu overlay panel.")]
-    [SerializeField] private GameObject pausePanel;
-
-    [Tooltip("The settings panel overlay.")]
-    [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private TextMeshProUGUI incomeLevelText;
+    [SerializeField] private TextMeshProUGUI speedLevelText;
+    [SerializeField] private TextMeshProUGUI treeLevelText;
 
     [System.Serializable]
-    public class FruitLevelUI
+    public class UnlockZoneUI
     {
-        [Tooltip("The FruitData asset reference.")]
+        [Tooltip("The fruit unlocked by this zone.")]
         public FruitData fruit;
-
-        [Tooltip("The TextMeshProUGUI component to display the level.")]
-        public TextMeshProUGUI levelText;
+        [Tooltip("The TMPro component displaying the remaining cost.")]
+        public TextMeshProUGUI costText;
+        [Tooltip("The Slider component displaying payment progress.")]
+        public Slider paymentSlider;
     }
 
-    [Header("Fruit Level UI References")]
-    [Tooltip("List of fruit levels and their corresponding TextMeshPro display elements.")]
-    [SerializeField] private System.Collections.Generic.List<FruitLevelUI> fruitLevelUIs = new System.Collections.Generic.List<FruitLevelUI>();
+    [Header("Unlock Zone UI References")]
+    [SerializeField] private System.Collections.Generic.List<UnlockZoneUI> unlockZoneUIs = new System.Collections.Generic.List<UnlockZoneUI>();
+
     private void Awake()
     {
-        // Singleton initialization
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        // Auto-find TextMeshProUGUI component in children if null
-        if (moneyText == null)
-        {
-            moneyText = GetComponentInChildren<TextMeshProUGUI>(true);
-        }
+        Instance=this;
     }
 
     private void Start()
     {
-        // Subscribe to GameManager's money changes
         if (GameManager.Instance != null)
         {
             GameManager.Instance.OnMoneyChanged += UpdateMoneyDisplay;
-            
-            // Set initial money display
             UpdateMoneyDisplay(GameManager.Instance.PlayerMoney);
         }
-
-        // Initialize fruit level texts
-        UpdateFruitLevelsDisplay();
-
-        // Ensure panels start in their correct default state
-        InitializeUI();
     }
 
     private void OnDestroy()
@@ -78,61 +56,8 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Sets up default active/inactive state for all panels at game start.
-    /// </summary>
-    public void InitializeUI()
-    {
-        if (gameplayPanel != null) gameplayPanel.SetActive(true);
-        if (pausePanel != null) pausePanel.SetActive(false);
-        if (settingsPanel != null) settingsPanel.SetActive(false);
-    }
-
-    /// <summary>
-    /// Opens or closes the pause panel, pausing/unpausing the game time scale.
-    /// </summary>
-    /// <param name="active">True to open pause menu, false to close.</param>
-    public void TogglePauseMenu(bool active)
-    {
-        if (pausePanel != null)
-        {
-            pausePanel.SetActive(active);
-            
-            // Toggle timescale depending on pause state
-            Time.timeScale = active ? 0f : 1f;
-        }
-    }
-
-    /// <summary>
-    /// Opens or closes the settings panel.
-    /// </summary>
-    /// <param name="active">True to open settings, false to close.</param>
-    public void ToggleSettingsMenu(bool active)
-    {
-        if (settingsPanel != null)
-        {
-            settingsPanel.SetActive(active);
-        }
-    }
-
-    /// <summary>
-    /// Sets the visibility of the main gameplay overlay.
-    /// </summary>
-    public void SetGameplayPanelActive(bool active)
-    {
-        if (gameplayPanel != null)
-        {
-            gameplayPanel.SetActive(active);
-        }
-    }
-
-    /// <summary>
-    /// Updates the text display with the current money value using TextMeshPro.
-    /// </summary>
-    /// <param name="currentMoney">The new player money balance.</param>
     public void UpdateMoneyDisplay(int currentMoney)
     {
-        // Update TextMeshPro Text
         if (moneyText != null)
         {
             moneyText.text = currentMoney.ToString();
@@ -140,28 +65,70 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the text display for all fruit level text components.
+    /// Updates the local or screen-space upgrade panel with values from a HarvestZone.
     /// </summary>
-    public void UpdateFruitLevelsDisplay()
+    public void UpdateUpgradeUI(
+        int currentIncome, int nextIncome, int incomeLevel, int maxIncomeLevel, int incomeUpgradeCost,
+        float currentHarvestDuration, float nextDuration, int speedLevel, int maxSpeedLevel, int speedUpgradeCost,
+        int treeLevel, int treePurchaseCost, bool treeMaxed)
     {
-        foreach (var fruitUI in fruitLevelUIs)
+        // --- Income Upgrade ---
+        if (fruitIncomeText != null)
         {
-            if (fruitUI != null && fruitUI.fruit != null && fruitUI.levelText != null)
-            {
-                fruitUI.levelText.text = "Lvl " + fruitUI.fruit.Level;
-            }
+            if (incomeLevel >= maxIncomeLevel)
+                fruitIncomeText.text = $"{currentIncome} <color=#f1c40f>(MAX)</color>";
+            else
+                fruitIncomeText.text = $"{currentIncome}-><color=#2ecc71>{nextIncome}</color>";
         }
+
+        if (incomeLevelText != null)
+            incomeLevelText.text = incomeLevel >= maxIncomeLevel ? "Lv MAX" : $"Lv {incomeLevel}/{maxIncomeLevel}";
+
+        if (incomeCostText != null)
+            incomeCostText.text = incomeLevel >= maxIncomeLevel ? "MAX" : incomeUpgradeCost.ToString();
+
+        // --- Speed Upgrade ---
+        if (harvestDurationText != null)
+        {
+            if (speedLevel >= maxSpeedLevel || currentHarvestDuration <= 0.2f)
+                harvestDurationText.text = $"{currentHarvestDuration:F1}s <color=#f1c40f>(MAX)</color>";
+            else
+                harvestDurationText.text = $"{currentHarvestDuration}s-><color=#2ecc71>{nextDuration:F1}s</color>";
+        }
+
+        if (speedLevelText != null)
+            speedLevelText.text = (speedLevel >= maxSpeedLevel || currentHarvestDuration <= 0.2f) ? "Lv MAX" : $"Lv {speedLevel}/{maxSpeedLevel}";
+
+        if (speedCostText != null)
+            speedCostText.text = (speedLevel >= maxSpeedLevel || currentHarvestDuration <= 0.2f) ? "MAX" : speedUpgradeCost.ToString();
+
+        // --- Tree Upgrade ---
+        if (buyTreeCostText != null)
+            buyTreeCostText.text = treeMaxed ? "MAX" : treePurchaseCost.ToString();
+
+        if (treeLevelText != null)
+            treeLevelText.text = treeMaxed ? "Lv MAX" : $"Lv {treeLevel}";
     }
 
     /// <summary>
-    /// Upgrades the level of a specific fruit and updates the level display.
+    /// Updates the active UnlockZone UI elements for a specific fruit.
     /// </summary>
-    /// <param name="fruit">The FruitData to upgrade.</param>
-    public void UpgradeFruitLevel(FruitData fruit)
+    public void UpdateUnlockUI(FruitData fruit, int remainingCost, float fillAmount)
     {
-        if (fruit != null)
+        if (fruit == null) return;
+
+        var ui = unlockZoneUIs.Find(x => x.fruit == fruit);
+        if (ui != null)
         {
-            fruit.UpgradeLevel();
-            UpdateFruitLevelsDisplay();
+            if (ui.costText != null)
+                ui.costText.text = remainingCost.ToString();
+
+            if (ui.paymentSlider != null)
+            {
+                ui.paymentSlider.minValue = 0f;
+                ui.paymentSlider.maxValue = 1f;
+                ui.paymentSlider.value = fillAmount;
+            }
         }
-    }}
+    }
+}

@@ -1,8 +1,8 @@
 ﻿<Solution>
   <Project Path="Unity.Polybrush.csproj" />
   <Project Path="Unity.Polybrush.Editor.csproj" />
-  <Project Path="UniPeek.Editor.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="UniPeek.Editor.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
   <Project Path="UniPeek.Runtime.csproj" />

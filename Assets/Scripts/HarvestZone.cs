@@ -6,7 +6,7 @@ using TMPro;
 
 public class HarvestZone : MonoBehaviour
 {
-    [SerializeField] private List<Tree> targetTrees = new List<Tree>();
+    [SerializeField] private List<Prop> targetTrees = new List<Prop>();
 
     [Header("Harvest Settings")]
     [SerializeField] private float harvestInterval = 0.2f;
@@ -22,12 +22,17 @@ public class HarvestZone : MonoBehaviour
     [SerializeField] private int speedUpgradeCost = 50;
     [SerializeField] private int treePurchaseCost = 150;
 
-    [Header("Local Upgrade Menu UI References (TextMesh Pro Only)")]
-    [SerializeField] private TextMeshProUGUI harvestDurationText;
-    [SerializeField] private TextMeshProUGUI fruitIncomeText;
-    [SerializeField] private TextMeshProUGUI incomeCostText;
-    [SerializeField] private TextMeshProUGUI speedCostText;
-    [SerializeField] private TextMeshProUGUI buyTreeCostText;
+    [Header("Upgrade Levels")]
+    [SerializeField] private int incomeLevel = 0;
+    [SerializeField] private int maxIncomeLevel = 10;
+
+    [SerializeField] private int speedLevel = 0;
+    [SerializeField] private int maxSpeedLevel = 10;
+
+    // Tree level is derived from how many trees are active (index based)
+    private int treeLevel = 0; // 0 means only first tree is active
+
+    // (UI text references are now managed by UIManager)
 
     private PlayerInventory activeInventory;
     private Coroutine harvestCoroutine;
@@ -57,7 +62,7 @@ public class HarvestZone : MonoBehaviour
         }
 
         // Hasat süresi/yenilenme süresini tüm ağaçlara uyguluyoruz
-        foreach (Tree tree in targetTrees)
+        foreach (Prop tree in targetTrees)
         {
             if (tree != null)
             {
@@ -68,6 +73,8 @@ public class HarvestZone : MonoBehaviour
 
     private void Update()
     {
+        if (activeInventory == null) return;
+
         // Oyuncu alandayken buton durumunu ve UI verilerini sürekli güncel tut
         UpdateUpgradeButtonState();
         UpdateUpgradeUIDisplay();
@@ -81,7 +88,8 @@ public class HarvestZone : MonoBehaviour
         if (activeInventory != null)
         {
             int nextIndex = GetNextInactiveTreeIndex();
-            if (nextIndex != -1)
+            bool canBuyTree = nextIndex != -1;
+            if (canBuyTree)
             {
                 upgradeButtonObject?.SetActive(true);
                 return;
@@ -95,26 +103,17 @@ public class HarvestZone : MonoBehaviour
     /// </summary>
     private void UpdateUpgradeUIDisplay()
     {
-        if (harvestDurationText != null)
-        {
-            if (currentHarvestDuration > 0.2f)
-            {
-                float nextDuration = Mathf.Max(0.2f, currentHarvestDuration - 0.5f);
-                harvestDurationText.text = $"{currentHarvestDuration}s-><color=#2ecc71>{nextDuration:F1}s</color>";
-            }
-            else
-            {
-                harvestDurationText.text = $"{currentHarvestDuration:F1}s (Max)";
-            }
-        }
-        if (fruitIncomeText != null)
-        {
-            int nextIncome = currentIncome + 5;
-            fruitIncomeText.text = $"{currentIncome}-><color=#2ecc71>{nextIncome}</color>";
-        }
-        if (incomeCostText != null) incomeCostText.text = incomeUpgradeCost.ToString();
-        if (speedCostText != null) speedCostText.text = speedUpgradeCost.ToString();
-        if (buyTreeCostText != null) buyTreeCostText.text = treePurchaseCost.ToString();
+        if (UIManager.Instance == null) return;
+
+        int nextIncome = currentIncome + 5;
+        float nextDuration = Mathf.Max(0.2f, currentHarvestDuration - 0.5f);
+        bool treeMaxed = GetNextInactiveTreeIndex() == -1;
+
+        UIManager.Instance.UpdateUpgradeUI(
+            currentIncome, nextIncome, incomeLevel, maxIncomeLevel, incomeUpgradeCost,
+            currentHarvestDuration, nextDuration, speedLevel, maxSpeedLevel, speedUpgradeCost,
+            treeLevel, treePurchaseCost, treeMaxed
+        );
     }
 
     private int GetNextInactiveTreeIndex()
@@ -148,58 +147,47 @@ public class HarvestZone : MonoBehaviour
     }
 
     /// <summary>
-    /// Oyuncu parası yettiğinde ve gerekli meyve seviyesine ulaştığında sıradaki ağacı satın alır.
-    /// </summary>
-    /// <summary>
-    /// Oyuncu parası yettiğinde ve gerekli meyve seviyesine ulaştığında sıradaki ağacı satın alır.
+    /// Upgrade menüsündeki "Ağaç Ekle" butonuna tıklandığında çağrılır.
+    /// Gerekli bakiye şartı sağlandıysa yeni bir ağaç satın alıp aktif eder.
     /// </summary>
     public void Upgrade()
     {
-        AddNewTree(); // Geriye uyumluluk için eski metodu yeni metoda bağlıyoruz
+        AddNewTree();
     }
 
     /// <summary>
-    /// Upgrade menüsündeki "Ağaç Ekle" butonuna tıklandığında çağrılır.
-    /// Gerekli bakiye ve meyve seviyesi şartı sağlandıysa yeni bir ağaç satın alıp aktif eder.
+    /// Sıradaki ağacı satın alır ve aktif eder.
     /// </summary>
     public void AddNewTree()
     {
         if (GameManager.Instance == null) return;
 
         int nextIndex = GetNextInactiveTreeIndex();
-        if (nextIndex != -1)
+        if (nextIndex == -1)
         {
-            Tree nextInactiveTree = targetTrees[nextIndex];
-            FruitData fruit = targetTrees[0]?.FruitData;
+            Debug.LogWarning("[HarvestZone] Açılacak başka ağaç yok!");
+            return;
+        }
 
-            if (fruit != null)
+        if (GameManager.Instance.PlayerMoney >= treePurchaseCost)
+        {
+            bool success = GameManager.Instance.RemoveMoney(treePurchaseCost);
+            if (success)
             {
-                int requiredLevel = nextIndex * 4;
-                if (fruit.Level < requiredLevel)
-                {
-                    Debug.LogWarning($"[HarvestZone] Bu ağacı açmak/eklemek için meyve seviyesi en az {requiredLevel} olmalı!");
-                    return;
-                }
-            }
+                targetTrees[nextIndex].gameObject.SetActive(true);
+                treeLevel++;
 
-            if (GameManager.Instance.PlayerMoney >= treePurchaseCost)
-            {
-                bool success = GameManager.Instance.RemoveMoney(treePurchaseCost);
-                if (success)
-                {
-                    // Ağacı doğrudan aktif ediyoruz (animasyonsuz)
-                    nextInactiveTree.gameObject.SetActive(true);
+                // Upgrade maliyetini artır
+                treePurchaseCost += 50;
 
-                    // Buton ve UI durumunu hemen güncelle
-                    UpdateUpgradeButtonState();
-                    UpdateUpgradeUIDisplay();
-                    Debug.Log($"[HarvestZone] Yeni ağaç başarıyla eklendi: {nextInactiveTree.name}");
-                }
+                UpdateUpgradeButtonState();
+                UpdateUpgradeUIDisplay();
+                Debug.Log($"[HarvestZone] Yeni ağaç eklendi. Ağaç Level: {treeLevel}");
             }
-            else
-            {
-                Debug.LogWarning($"[HarvestZone] Yetersiz bakiye! Ağaç ekleme maliyeti: {treePurchaseCost}");
-            }
+        }
+        else
+        {
+            Debug.LogWarning($"[HarvestZone] Yetersiz bakiye! Ağaç ekleme maliyeti: {treePurchaseCost}");
         }
     }
 
@@ -210,6 +198,12 @@ public class HarvestZone : MonoBehaviour
     {
         if (GameManager.Instance == null) return;
 
+        if (incomeLevel >= maxIncomeLevel)
+        {
+            Debug.LogWarning("[HarvestZone] Kazanç upgrade'i maksimum seviyeye ulaştı!");
+            return;
+        }
+
         FruitData fruit = targetTrees[0]?.FruitData;
         if (fruit == null) return;
 
@@ -218,15 +212,15 @@ public class HarvestZone : MonoBehaviour
             bool success = GameManager.Instance.RemoveMoney(incomeUpgradeCost);
             if (success)
             {
-                currentIncome += 5; // Kazancı 5 birim artır
+                currentIncome += 5;
                 fruit.SetBasePrice(currentIncome);
+                incomeLevel++;
 
                 // Geliştirme maliyetini artır
                 incomeUpgradeCost += 25;
 
-                // UI metinlerini hemen güncelle
                 UpdateUpgradeUIDisplay();
-                Debug.Log($"[HarvestZone] Kazanç Yükseltildi! Yeni Kazanç: {currentIncome}, Sıradaki Maliyet: {incomeUpgradeCost}");
+                Debug.Log($"[HarvestZone] Kazanç Yükseltildi! Yeni Kazanç: {currentIncome}, Level: {incomeLevel}/{maxIncomeLevel}");
             }
         }
         else
@@ -242,6 +236,12 @@ public class HarvestZone : MonoBehaviour
     {
         if (GameManager.Instance == null) return;
 
+        if (speedLevel >= maxSpeedLevel)
+        {
+            Debug.LogWarning("[HarvestZone] Hız upgrade'i maksimum seviyeye ulaştı!");
+            return;
+        }
+
         if (currentHarvestDuration <= 0.2f)
         {
             Debug.LogWarning("[HarvestZone] Hasat süresi zaten maksimum hızda (0.2s)!");
@@ -253,11 +253,11 @@ public class HarvestZone : MonoBehaviour
             bool success = GameManager.Instance.RemoveMoney(speedUpgradeCost);
             if (success)
             {
-                // Süreyi 0.5 saniye azalt (en az 0.2 saniye olabilir)
                 currentHarvestDuration = Mathf.Max(0.2f, currentHarvestDuration - 0.5f);
+                speedLevel++;
 
                 // Hasat yenilenme süresini tüm ağaçlara uyguluyoruz
-                foreach (Tree tree in targetTrees)
+                foreach (Prop tree in targetTrees)
                 {
                     if (tree != null)
                     {
@@ -268,9 +268,8 @@ public class HarvestZone : MonoBehaviour
                 // Geliştirme maliyetini artır
                 speedUpgradeCost += 25;
 
-                // UI metinlerini hemen güncelle
                 UpdateUpgradeUIDisplay();
-                Debug.Log($"[HarvestZone] Hasat Süresi Kısaltıldı! Yeni Süre: {currentHarvestDuration}s, Sıradaki Maliyet: {speedUpgradeCost}");
+                Debug.Log($"[HarvestZone] Hasat Süresi Kısaltıldı! Yeni Süre: {currentHarvestDuration}s, Level: {speedLevel}/{maxSpeedLevel}");
             }
         }
         else
@@ -278,17 +277,6 @@ public class HarvestZone : MonoBehaviour
             Debug.LogWarning($"[HarvestZone] Yetersiz bakiye! Hız yükseltme maliyeti: {speedUpgradeCost}");
         }
     }
-
-    private Tree GetFirstInactiveTree()
-    {
-        int index = GetNextInactiveTreeIndex();
-        if (index != -1)
-        {
-            return targetTrees[index];
-        }
-        return null;
-    }
-
 
     private void OnTriggerExit(Collider other)
     {
@@ -311,7 +299,6 @@ public class HarvestZone : MonoBehaviour
     {
         while (activeInventory != null)
         {
-
             PlayerController player = activeInventory.GetComponent<PlayerController>();
             if (player != null && !player.enabled)
             {
@@ -322,12 +309,10 @@ public class HarvestZone : MonoBehaviour
             int currentSpaceAvailable = activeInventory.GetSpaceAvailable() - reservedSpace;
             if (currentSpaceAvailable > 0)
             {
-
-                Tree nextTree = FindNextTreeWithFruit();
+                Prop nextTree = FindNextTreeWithFruit();
 
                 if (nextTree != null)
                 {
-
                     reservedSpace++;
 
                     int harvested = nextTree.Harvest(1);
@@ -338,7 +323,6 @@ public class HarvestZone : MonoBehaviour
 
                         if (visualApple != null)
                         {
-
                             StartCoroutine(AnimateAppleFly(visualApple, activeInventory, nextTree.FruitData));
                         }
                         else
@@ -358,7 +342,7 @@ public class HarvestZone : MonoBehaviour
         }
     }
 
-    private Tree FindNextTreeWithFruit()
+    private Prop FindNextTreeWithFruit()
     {
         for (int i = 0; i < targetTrees.Count; i++)
         {
@@ -370,11 +354,10 @@ public class HarvestZone : MonoBehaviour
         return null;
     }
 
-    private GameObject CreateVisualApple(Tree tree)
+    private GameObject CreateVisualApple(Prop tree)
     {
         if (tree.FruitData != null && tree.FruitData.FruitPrefab != null)
         {
-
             return Instantiate(tree.FruitData.FruitPrefab, tree.transform.position + Vector3.up * 2f, Quaternion.identity);
         }
         return null;
@@ -428,9 +411,7 @@ public class HarvestZone : MonoBehaviour
             currentPos.y += Mathf.Sin(t * Mathf.PI) * arcHeight;
 
             appleObj.transform.position = currentPos;
-
             appleObj.transform.rotation = startRot * Quaternion.Euler(t * 360f, t * 720f, 0f);
-
             appleObj.transform.localScale = Vector3.Lerp(startScale, startScale * 0.4f, t);
 
             yield return null;
