@@ -424,7 +424,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &8552048450764162905
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -485,9 +485,8 @@ MonoBehaviour:
   transferInterval: 0.1
   transferAmountPerTick: 1
   overheadCanvas: {fileID: 5764327004799082693}
-  moneyPrefab: {fileID: 0}
+  moneyPrefab: {fileID: 6954758372675618198, guid: 6a301d09debaf1e4a8d3e2657cc44a96, type: 3}
   moneyArcHeight: 3
-  moneyFlightDuration: 0.4
   growAndShrinkDuration: 1
 --- !u!1 &8249448586241332002
 GameObject:

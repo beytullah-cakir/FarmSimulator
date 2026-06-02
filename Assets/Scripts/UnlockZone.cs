@@ -36,7 +36,7 @@ public class UnlockZone : MonoBehaviour
     [SerializeField] private GameObject moneyPrefab;
 
     [SerializeField] private float moneyArcHeight = 3f;
-    [SerializeField] private float moneyFlightDuration = 0.4f;
+    private float moneyFlightDuration = 0.4f;
 
     private Coroutine transferCoroutine;
     private PlayerController activePlayer;
@@ -140,9 +140,7 @@ public class UnlockZone : MonoBehaviour
             // Hafif rotasyon efekti
             moneyObj.transform.rotation = Quaternion.Euler(0f, t * 360f, t * 180f);
 
-            // Hedefe yaklaştıkça küçül
-            float scale = Mathf.Lerp(1f, 0f, Mathf.Pow(t, 2f));
-            moneyObj.transform.localScale = Vector3.one * scale;
+
 
             yield return null;
         }

@@ -287,38 +287,39 @@ public class CustomerQueueManager : MonoBehaviour
         {
             yield return new WaitForSeconds(purchaseCheckInterval);
 
-            // Check if there is an active customer at the register
-            if (standInventory != null && activeQueue.Count > 0 && activeQueue[0] != null)
+            if (standInventory == null || activeQueue.Count == 0 || activeQueue[0] == null) continue;
+
+            CustomerController activeController = activeQueue[0];
+            if (activeController.GetCurrentState() != CustomerController.CustomerState.AtRegister) continue;
+
+            Customer currentCustomer = activeController.GetCustomerData();
+            if (currentCustomer == null || currentCustomer.IsOrderSatisfied) continue;
+
+            // Iterate over ALL fruits in the multi-fruit order
+            var orderSnapshot = new Dictionary<FruitData, int>(currentCustomer.GetOrder());
+            foreach (var entry in orderSnapshot)
             {
-                CustomerController activeController = activeQueue[0];
-                if (activeController.GetCurrentState() == CustomerController.CustomerState.AtRegister)
+                FruitData requestedFruit = entry.Key;
+                int remaining = entry.Value;
+                if (remaining <= 0) continue;
+
+                // Check if the stand inventory has this fruit in stock
+                var standItem = standInventory.StoredItems.Find(item => item.fruit == requestedFruit);
+                if (standItem != null && standItem.amount > 0)
                 {
-                    Customer currentCustomer = activeController.GetCustomerData();
-                    if (currentCustomer != null && !currentCustomer.IsOrderSatisfied)
+                    bool removed = standInventory.RemoveFruit(requestedFruit, 1);
+                    if (removed)
                     {
-                        FruitData requestedFruit = currentCustomer.RequestedFruit;
+                        currentCustomer.DeliverFruit(requestedFruit, 1);
 
-                        // Check if the stand inventory has the requested fruit in stock
-                        var standItem = standInventory.StoredItems.Find(item => item.fruit == requestedFruit);
-                        if (standItem != null && standItem.amount > 0)
+                        // Spawn visual flying fruit from Stand to Customer
+                        if (requestedFruit.FruitPrefab != null)
                         {
-                            // Deduct 1 fruit from the stand's inventory
-                            bool removed = standInventory.RemoveFruit(requestedFruit, 1);
-                            if (removed)
+                            Vector3 spawnPos = standInventory.transform.position + Vector3.up * 1f;
+                            GameObject visualObj = Instantiate(requestedFruit.FruitPrefab, spawnPos, Quaternion.identity);
+                            if (visualObj != null)
                             {
-                                // Deliver it to the customer logically (updates their remaining count and UI immediately)
-                                currentCustomer.DeliverFruit(requestedFruit, 1);
-
-                                // SPAWN VISUAL FLYING FRUIT (Parabolic arc from Stand to Customer)
-                                Vector3 spawnPos = standInventory.transform.position + Vector3.up * 1f;
-                                if (requestedFruit.FruitPrefab != null)
-                                {
-                                    GameObject visualObj = Instantiate(requestedFruit.FruitPrefab, spawnPos, Quaternion.identity);
-                                    if (visualObj != null)
-                                    {
-                                        StartCoroutine(AnimateFruitToCustomerVisual(visualObj, currentCustomer));
-                                    }
-                                }
+                                StartCoroutine(AnimateFruitToCustomerVisual(visualObj, currentCustomer));
                             }
                         }
                     }

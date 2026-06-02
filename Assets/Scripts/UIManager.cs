@@ -110,6 +110,8 @@ public class UIManager : MonoBehaviour
             treeLevelText.text = treeMaxed ? "Lv MAX" : $"Lv {treeLevel}";
     }
 
+    private HarvestZone activeHarvestZone;
+
     /// <summary>
     /// Updates the active UnlockZone UI elements for a specific fruit.
     /// </summary>
@@ -129,6 +131,47 @@ public class UIManager : MonoBehaviour
                 ui.paymentSlider.maxValue = 1f;
                 ui.paymentSlider.value = fillAmount;
             }
+        }
+    }
+
+    /// <summary>
+    /// Registers which HarvestZone the player is currently standing inside.
+    /// </summary>
+    public void SetActiveHarvestZone(HarvestZone zone)
+    {
+        activeHarvestZone = zone;
+    }
+
+    /// <summary>
+    /// Triggered by the UI Button to upgrade income of the active zone.
+    /// </summary>
+    public void TriggerActiveIncomeUpgrade()
+    {
+        if (activeHarvestZone != null)
+        {
+            activeHarvestZone.UpgradeIncome();
+        }
+    }
+
+    /// <summary>
+    /// Triggered by the UI Button to upgrade speed of the active zone.
+    /// </summary>
+    public void TriggerActiveSpeedUpgrade()
+    {
+        if (activeHarvestZone != null)
+        {
+            activeHarvestZone.UpgradeHarvestSpeed();
+        }
+    }
+
+    /// <summary>
+    /// Triggered by the UI Button to purchase a new tree in the active zone.
+    /// </summary>
+    public void TriggerActiveAddNewTree()
+    {
+        if (activeHarvestZone != null)
+        {
+            activeHarvestZone.AddNewTree();
         }
     }
 }

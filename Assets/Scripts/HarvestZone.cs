@@ -135,6 +135,11 @@ public class HarvestZone : MonoBehaviour
         {
             activeInventory = inventory;
 
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.SetActiveHarvestZone(this);
+            }
+
             UpdateUpgradeButtonState();
             UpdateUpgradeUIDisplay();
 
@@ -284,6 +289,11 @@ public class HarvestZone : MonoBehaviour
         if (inventory != null && activeInventory == inventory)
         {
             activeInventory = null;
+
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.SetActiveHarvestZone(null);
+            }
 
             upgradeButtonObject?.SetActive(false);
 

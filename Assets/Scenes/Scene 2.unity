@@ -3236,37 +3236,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1669781109300623314, guid: e41f2185f1c11a8409ff3cd219f789a1, type: 3}
   m_PrefabInstance: {fileID: 383783232}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &391288791
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 391288792}
-  m_Layer: 0
-  m_Name: Farms
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &391288792
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 391288791}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1609786494}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &393443477
 GameObject:
   m_ObjectHideFlags: 0
@@ -3847,7 +3816,7 @@ PrefabInstance:
       objectReference: {fileID: 872316353}
     - target: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
       propertyPath: treePurchaseCost
-      value: 700
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
       propertyPath: harvestDurationText
@@ -4792,6 +4761,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6020172200812821352, guid: dd1314451e232934d84f9c1f0afb2806, type: 3}
   m_PrefabInstance: {fileID: 1484264921}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &518022317 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1772797793406544201, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+  m_PrefabInstance: {fileID: 1963598514}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1 &520107107
 GameObject:
   m_ObjectHideFlags: 0
@@ -4834,6 +4814,12 @@ MonoBehaviour:
   - fruit: {fileID: 11400000, guid: b8d3d198f6adba645a02157f6ad2332a, type: 2}
     costText: {fileID: 1840637355}
     paymentSlider: {fileID: 3968752396217712539}
+  - fruit: {fileID: 11400000, guid: ce7c695fe0e9e184987358a3bfd6d8b3, type: 2}
+    costText: {fileID: 1351655888}
+    paymentSlider: {fileID: 762808422}
+  - fruit: {fileID: 11400000, guid: e36ef544562ed3845ba60ea1facbe500, type: 2}
+    costText: {fileID: 618725645}
+    paymentSlider: {fileID: 518022317}
 --- !u!4 &520107109
 Transform:
   m_ObjectHideFlags: 0
@@ -5238,6 +5224,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1669781109300623314, guid: e41f2185f1c11a8409ff3cd219f789a1, type: 3}
   m_PrefabInstance: {fileID: 618415282}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &618725645 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4953535311659464417, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+  m_PrefabInstance: {fileID: 1963598514}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &621623909
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6166,6 +6163,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6020172200812821352, guid: dd1314451e232934d84f9c1f0afb2806, type: 3}
   m_PrefabInstance: {fileID: 753446617}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &762808422 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1772797793406544201, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+  m_PrefabInstance: {fileID: 887861873}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1001 &767645048
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6317,7 +6325,7 @@ PrefabInstance:
     - target: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
       propertyPath: upgradeButtonObject
       value: 
-      objectReference: {fileID: 1663067159}
+      objectReference: {fileID: 6509555964067524743}
     - target: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
       propertyPath: currentHarvestDuration
       value: 20
@@ -7106,11 +7114,39 @@ PrefabInstance:
     - target: {fileID: 2241505929815467230, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1198828833}
+      objectReference: {fileID: 520107108}
+    - target: {fileID: 2241505929815467230, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: TriggerActiveSpeedUpgrade
+      objectReference: {fileID: 0}
+    - target: {fileID: 2241505929815467230, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UIManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3124913159765806063, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 520107108}
+    - target: {fileID: 3124913159765806063, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: TriggerActiveAddNewTree
+      objectReference: {fileID: 0}
+    - target: {fileID: 3124913159765806063, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UIManager, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 4506309017872271205, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1198828833}
+      objectReference: {fileID: 520107108}
+    - target: {fileID: 4506309017872271205, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: TriggerActiveIncomeUpgrade
+      objectReference: {fileID: 0}
+    - target: {fileID: 4506309017872271205, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UIManager, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 4687163174178605330, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -7373,6 +7409,10 @@ PrefabInstance:
     - target: {fileID: 2696954866570080560, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
       propertyPath: m_Name
       value: UnlockCarrot
+      objectReference: {fileID: 0}
+    - target: {fileID: 3751842097513414630, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_Name
+      value: CarrotSlider
       objectReference: {fileID: 0}
     - target: {fileID: 5813225334983620098, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
       propertyPath: m_Name
@@ -15901,17 +15941,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dd1314451e232934d84f9c1f0afb2806, type: 3}
---- !u!114 &1198828833 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
-  m_PrefabInstance: {fileID: 448694894}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1e18d034d65d6c40a01bcdb14c5c07e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HarvestZone
 --- !u!1001 &1202128991
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16320,11 +16349,6 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 7885829278114004762, guid: d534d873f81082e4aa9f93a03e577725, type: 3}
   m_PrefabInstance: {fileID: 1240390361}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1241326991 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8426712190827414814, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-  m_PrefabInstance: {fileID: 872316350}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1255915706
 GameObject:
@@ -16878,6 +16902,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fa0ee8beb5bad1541b3631b882f5dff8, type: 3}
+--- !u!114 &1351655888 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4953535311659464417, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+  m_PrefabInstance: {fileID: 887861873}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &1354526863
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18595,7 +18630,6 @@ Transform:
   - {fileID: 1971930723}
   - {fileID: 477134196}
   - {fileID: 1107039955}
-  - {fileID: 391288792}
   - {fileID: 1063831902}
   - {fileID: 1976586698}
   - {fileID: 1571928356}
@@ -18795,7 +18829,7 @@ PrefabInstance:
     - target: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
       propertyPath: upgradeButtonObject
       value: 
-      objectReference: {fileID: 1756202961}
+      objectReference: {fileID: 6509555964067524743}
     - target: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
       propertyPath: targetTrees.Array.size
       value: 1
@@ -19627,7 +19661,7 @@ PrefabInstance:
     - target: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
       propertyPath: upgradeButtonObject
       value: 
-      objectReference: {fileID: 1241326991}
+      objectReference: {fileID: 6509555964067524743}
     - target: {fileID: 4037817391550264883, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
       propertyPath: targetTrees.Array.size
       value: 1
@@ -19745,11 +19779,6 @@ PrefabInstance:
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7889022297404444794, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
   m_PrefabInstance: {fileID: 1660789374}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1663067159 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8783661826052135283, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-  m_PrefabInstance: {fileID: 872316350}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1673376756
 PrefabInstance:
@@ -20844,11 +20873,6 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 1669781109300623314, guid: e41f2185f1c11a8409ff3cd219f789a1, type: 3}
   m_PrefabInstance: {fileID: 1752236248}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1756202961 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4940580101891890108, guid: 2750efb9ed997db49b8f2b7150d8d625, type: 3}
-  m_PrefabInstance: {fileID: 872316350}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1757829698
 PrefabInstance:
@@ -23332,6 +23356,10 @@ PrefabInstance:
     - target: {fileID: 2696954866570080560, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
       propertyPath: m_Name
       value: UnlockOrange
+      objectReference: {fileID: 0}
+    - target: {fileID: 3751842097513414630, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
+      propertyPath: m_Name
+      value: OrangeSlider
       objectReference: {fileID: 0}
     - target: {fileID: 5813225334983620098, guid: 0b5cfc3e09f98134e85797000e5a7ed6, type: 3}
       propertyPath: m_Name
