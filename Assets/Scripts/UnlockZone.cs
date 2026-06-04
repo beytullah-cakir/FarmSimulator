@@ -1,47 +1,32 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using DG.Tweening;
 using Unity.Cinemachine;
 
-public class UnlockZone : MonoBehaviour
+public class UnlockZone : MonoBehaviour, ISaveable
 {
+    [SerializeField] private string saveID = "unlock_zone_default";
     [SerializeField] private int requiredMoney = 500;
+    [SerializeField] private GameObject objectToDeactivate;
+    [SerializeField] private GameObject objectToActivate;
+    [SerializeField] private FruitData fruitToUnlock;
+    [SerializeField] private GameObject cutsceneCameraObject;
+    [SerializeField] private float cameraBlendDuration;
+    [SerializeField] private float transferInterval = 0.05f;
+    [SerializeField] private int transferAmountPerTick = 5;
+    [SerializeField] private Canvas overheadCanvas;
+    [SerializeField] private GameObject moneyPrefab;
+    [SerializeField] private float moneyArcHeight = 3f;
+    [SerializeField] private float growAndShrinkDuration = 1f;
+
+    public string SaveID => saveID;
 
     private int currentInvestedMoney = 0;
-
-    [SerializeField] private GameObject objectToDeactivate;
-
-    [SerializeField] private GameObject objectToActivate;
-
-    [SerializeField] private FruitData fruitToUnlock;
-
-    public GameObject cutsceneCameraObject;
-    public GameObject mainCinemachineCamera;
-
-    public float cameraBlendDuration;
-
-    [SerializeField] private float transferInterval = 0.05f;
-
-    [SerializeField] private int transferAmountPerTick = 5;
-
-    // (UI references are now managed by UIManager)
-
-    [SerializeField] private Canvas overheadCanvas;
-
-    [Header("Para Animasyonu")]
-    [Tooltip("Inspector'dan atanacak para prefab'ı.")]
-    [SerializeField] private GameObject moneyPrefab;
-
-    [SerializeField] private float moneyArcHeight = 3f;
     private float moneyFlightDuration = 0.4f;
-
     private Coroutine transferCoroutine;
     private PlayerController activePlayer;
-
     private bool isPlayerInside = false;
+    private bool isLoadedAsUnlocked = false;
 
     private void Awake()
     {
@@ -51,6 +36,11 @@ public class UnlockZone : MonoBehaviour
 
     private void Start()
     {
+        if (isLoadedAsUnlocked)
+        {
+            InstantUnlock();
+            return;
+        }
         UpdateCostUI();
     }
 
@@ -59,7 +49,7 @@ public class UnlockZone : MonoBehaviour
         PlayerController player = other.GetComponent<PlayerController>();
         activePlayer = player;
         isPlayerInside = true;
-        UpdateCostUI(); // Update UI instantly on entry
+        UpdateCostUI();
         transferCoroutine = StartCoroutine(TransferMoneyRoutine());
     }
 
@@ -79,8 +69,7 @@ public class UnlockZone : MonoBehaviour
         while (isPlayerInside && currentInvestedMoney < requiredMoney)
         {
             int remainingCost = requiredMoney - currentInvestedMoney;
-            int playerWallet = GameManager.Instance.PlayerMoney;
-            int transferAmount = Mathf.Min(transferAmountPerTick, remainingCost, playerWallet);
+            int transferAmount = Mathf.Min(transferAmountPerTick, remainingCost, GameManager.Instance.PlayerMoney);
 
             if (transferAmount > 0)
             {
@@ -88,11 +77,10 @@ public class UnlockZone : MonoBehaviour
                 currentInvestedMoney += transferAmount;
                 UpdateCostUI();
 
-                // Para animasyonunu başlat (fire-and-forget)
+                AudioManager.Instance?.PlaySFX(AudioManager.Instance.transformCoin);
+
                 if (moneyPrefab != null && activePlayer != null)
-                {
                     StartCoroutine(SpawnMoneyProjectile(activePlayer.transform.position));
-                }
             }
 
             if (currentInvestedMoney >= requiredMoney)
@@ -105,14 +93,10 @@ public class UnlockZone : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Para objesini oyuncudan UnlockZone merkezine parabolik yay ile fırlatır.
-    /// </summary>
     private IEnumerator SpawnMoneyProjectile(Vector3 spawnWorldPos)
     {
         GameObject moneyObj = Instantiate(moneyPrefab, spawnWorldPos + Vector3.up * 1f, Quaternion.identity);
 
-        // Fizik/collider'ı devre dışı bırak
         Collider col = moneyObj.GetComponent<Collider>();
         if (col != null) col.enabled = false;
 
@@ -121,7 +105,6 @@ public class UnlockZone : MonoBehaviour
 
         Vector3 startPos = moneyObj.transform.position;
         Vector3 targetPos = transform.position + Vector3.up * 1f;
-
         float elapsed = 0f;
 
         while (elapsed < moneyFlightDuration)
@@ -131,22 +114,16 @@ public class UnlockZone : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = elapsed / moneyFlightDuration;
 
-            // Parabolik hareket: yatay lerp + dikey sin eğrisi
             Vector3 pos = Vector3.Lerp(startPos, targetPos, t);
             pos.y += Mathf.Sin(t * Mathf.PI) * moneyArcHeight;
 
             moneyObj.transform.position = pos;
-
-            // Hafif rotasyon efekti
             moneyObj.transform.rotation = Quaternion.Euler(0f, t * 360f, t * 180f);
-
-
 
             yield return null;
         }
 
-        if (moneyObj != null)
-            Destroy(moneyObj);
+        if (moneyObj != null) Destroy(moneyObj);
     }
 
     private void UpdateCostUI()
@@ -155,9 +132,7 @@ public class UnlockZone : MonoBehaviour
         float fillAmount = (float)currentInvestedMoney / requiredMoney;
 
         if (UIManager.Instance != null)
-        {
             UIManager.Instance.UpdateUnlockUI(fruitToUnlock, remainingCost, fillAmount);
-        }
     }
 
     private void UnlockArea()
@@ -166,44 +141,34 @@ public class UnlockZone : MonoBehaviour
         GameManager.Instance.SetFruitActive(fruitToUnlock, true);
 
         Transform targetFocus = objectToActivate.transform.GetChild(0);
-
         SetCameraTarget(targetFocus);
         activePlayer.SetInputActive(false);
         cutsceneCameraObject.SetActive(true);
 
         StartCoroutine(AnimateUnlockTransition());
 
-        if (transferCoroutine != null)
-        {
-            StopCoroutine(transferCoroutine);
-        }
+        if (transferCoroutine != null) StopCoroutine(transferCoroutine);
         transferCoroutine = null;
+
+        AudioManager.Instance?.PlaySFX(AudioManager.Instance.unlockArea);
     }
 
-    public float growAndShrinkDuration = 1f;
     private IEnumerator AnimateUnlockTransition()
     {
         yield return new WaitForSeconds(cameraBlendDuration);
 
-        // objectToDeactivate altındaki doğrudan çocuk objeleri sıfıra küçültüyoruz
         foreach (Transform child in objectToDeactivate.transform)
-        {
             child.DOScale(Vector3.zero, growAndShrinkDuration).SetEase(Ease.OutCubic);
-        }
 
         yield return new WaitForSeconds(growAndShrinkDuration);
-
         Destroy(objectToDeactivate);
 
         objectToActivate.SetActive(true);
 
         foreach (Transform child in objectToActivate.transform)
-        {
             child.DOScale(Vector3.one, growAndShrinkDuration).SetEase(Ease.OutCubic);
-        }
 
         yield return new WaitForSeconds(growAndShrinkDuration);
-
         cutsceneCameraObject.SetActive(false);
 
         yield return new WaitForSeconds(cameraBlendDuration);
@@ -217,4 +182,39 @@ public class UnlockZone : MonoBehaviour
         comp.Follow = target;
         comp.LookAt = target;
     }
+
+    #region ISaveable
+
+    public object CaptureState()
+    {
+        return new UnlockZoneSaveData
+        {
+            saveID = this.saveID,
+            currentInvestedMoney = this.currentInvestedMoney,
+            isUnlocked = (currentInvestedMoney >= requiredMoney)
+        };
+    }
+
+    public void RestoreState(object state)
+    {
+        if (state is not UnlockZoneSaveData data) return;
+
+        currentInvestedMoney = data.currentInvestedMoney;
+
+        if (data.isUnlocked || currentInvestedMoney >= requiredMoney)
+            isLoadedAsUnlocked = true;
+        else
+            UpdateCostUI();
+    }
+
+    private void InstantUnlock()
+    {
+        if (overheadCanvas != null) overheadCanvas.enabled = false;
+        if (fruitToUnlock != null) GameManager.Instance.SetFruitActive(fruitToUnlock, true);
+        if (objectToDeactivate != null) Destroy(objectToDeactivate);
+        if (objectToActivate != null) objectToActivate.SetActive(true);
+        Destroy(gameObject);
+    }
+
+    #endregion
 }

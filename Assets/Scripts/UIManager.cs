@@ -6,16 +6,13 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
 
-    [Header("Money UI References (TextMesh Pro Only)")]
     [SerializeField] private TextMeshProUGUI moneyText;
 
-    [Header("Harvest Zone Upgrade UI References")]
     [SerializeField] private TextMeshProUGUI harvestDurationText;
     [SerializeField] private TextMeshProUGUI fruitIncomeText;
     [SerializeField] private TextMeshProUGUI incomeCostText;
     [SerializeField] private TextMeshProUGUI speedCostText;
     [SerializeField] private TextMeshProUGUI buyTreeCostText;
-
     [SerializeField] private TextMeshProUGUI incomeLevelText;
     [SerializeField] private TextMeshProUGUI speedLevelText;
     [SerializeField] private TextMeshProUGUI treeLevelText;
@@ -23,21 +20,16 @@ public class UIManager : MonoBehaviour
     [System.Serializable]
     public class UnlockZoneUI
     {
-        [Tooltip("The fruit unlocked by this zone.")]
         public FruitData fruit;
-        [Tooltip("The TMPro component displaying the remaining cost.")]
         public TextMeshProUGUI costText;
-        [Tooltip("The Slider component displaying payment progress.")]
         public Slider paymentSlider;
     }
 
-    [Header("Unlock Zone UI References")]
-    [SerializeField] private System.Collections.Generic.List<UnlockZoneUI> unlockZoneUIs = new System.Collections.Generic.List<UnlockZoneUI>();
+    [SerializeField] private System.Collections.Generic.List<UnlockZoneUI> unlockZoneUIs = new();
 
-    private void Awake()
-    {
-        Instance=this;
-    }
+    private HarvestZone activeHarvestZone;
+
+    private void Awake() => Instance = this;
 
     private void Start()
     {
@@ -51,34 +43,24 @@ public class UIManager : MonoBehaviour
     private void OnDestroy()
     {
         if (GameManager.Instance != null)
-        {
             GameManager.Instance.OnMoneyChanged -= UpdateMoneyDisplay;
-        }
     }
 
     public void UpdateMoneyDisplay(int currentMoney)
     {
-        if (moneyText != null)
-        {
-            moneyText.text = currentMoney.ToString();
-        }
+        if (moneyText != null) moneyText.text = currentMoney.ToString();
     }
 
-    /// <summary>
-    /// Updates the local or screen-space upgrade panel with values from a HarvestZone.
-    /// </summary>
     public void UpdateUpgradeUI(
         int currentIncome, int nextIncome, int incomeLevel, int maxIncomeLevel, int incomeUpgradeCost,
         float currentHarvestDuration, float nextDuration, int speedLevel, int maxSpeedLevel, int speedUpgradeCost,
         int activeTrees, int maxTrees, int treePurchaseCost, bool treeMaxed)
     {
-        // --- Income Upgrade ---
         if (fruitIncomeText != null)
         {
-            if (incomeLevel >= maxIncomeLevel)
-                fruitIncomeText.text = $"{currentIncome} <color=#f1c40f>(MAX)</color>";
-            else
-                fruitIncomeText.text = $"{currentIncome}-><color=#2ecc71>{nextIncome}</color>";
+            fruitIncomeText.text = incomeLevel >= maxIncomeLevel
+                ? $"{currentIncome} <color=#f1c40f>(MAX)</color>"
+                : $"{currentIncome}-><color=#2ecc71>{nextIncome}</color>";
         }
 
         if (incomeLevelText != null)
@@ -87,22 +69,21 @@ public class UIManager : MonoBehaviour
         if (incomeCostText != null)
             incomeCostText.text = incomeLevel >= maxIncomeLevel ? "MAX" : incomeUpgradeCost.ToString();
 
-        // --- Speed Upgrade ---
+        bool speedMaxed = speedLevel >= maxSpeedLevel || currentHarvestDuration <= 0.2f;
+
         if (harvestDurationText != null)
         {
-            if (speedLevel >= maxSpeedLevel || currentHarvestDuration <= 0.2f)
-                harvestDurationText.text = $"{currentHarvestDuration:F1}s <color=#f1c40f>(MAX)</color>";
-            else
-                harvestDurationText.text = $"{currentHarvestDuration}s-><color=#2ecc71>{nextDuration:F1}s</color>";
+            harvestDurationText.text = speedMaxed
+                ? $"{currentHarvestDuration:F1}s <color=#f1c40f>(MAX)</color>"
+                : $"{currentHarvestDuration}s-><color=#2ecc71>{nextDuration:F1}s</color>";
         }
 
         if (speedLevelText != null)
-            speedLevelText.text = (speedLevel >= maxSpeedLevel || currentHarvestDuration <= 0.2f) ? "Lv MAX" : $"Lv {speedLevel}/{maxSpeedLevel}";
+            speedLevelText.text = speedMaxed ? "Lv MAX" : $"Lv {speedLevel}/{maxSpeedLevel}";
 
         if (speedCostText != null)
-            speedCostText.text = (speedLevel >= maxSpeedLevel || currentHarvestDuration <= 0.2f) ? "MAX" : speedUpgradeCost.ToString();
+            speedCostText.text = speedMaxed ? "MAX" : speedUpgradeCost.ToString();
 
-        // --- Tree Upgrade ---
         if (buyTreeCostText != null)
             buyTreeCostText.text = treeMaxed ? "MAX" : treePurchaseCost.ToString();
 
@@ -110,68 +91,37 @@ public class UIManager : MonoBehaviour
             treeLevelText.text = $"{activeTrees}/{maxTrees}";
     }
 
-    private HarvestZone activeHarvestZone;
-
-    /// <summary>
-    /// Updates the active UnlockZone UI elements for a specific fruit.
-    /// </summary>
     public void UpdateUnlockUI(FruitData fruit, int remainingCost, float fillAmount)
     {
         if (fruit == null) return;
 
         var ui = unlockZoneUIs.Find(x => x.fruit == fruit);
-        if (ui != null)
-        {
-            if (ui.costText != null)
-                ui.costText.text = remainingCost.ToString();
+        if (ui == null) return;
 
-            if (ui.paymentSlider != null)
-            {
-                ui.paymentSlider.minValue = 0f;
-                ui.paymentSlider.maxValue = 1f;
-                ui.paymentSlider.value = fillAmount;
-            }
+        if (ui.costText != null) ui.costText.text = remainingCost.ToString();
+
+        if (ui.paymentSlider != null)
+        {
+            ui.paymentSlider.minValue = 0f;
+            ui.paymentSlider.maxValue = 1f;
+            ui.paymentSlider.value = fillAmount;
         }
     }
 
-    /// <summary>
-    /// Registers which HarvestZone the player is currently standing inside.
-    /// </summary>
-    public void SetActiveHarvestZone(HarvestZone zone)
-    {
-        activeHarvestZone = zone;
-    }
+    public void SetActiveHarvestZone(HarvestZone zone) => activeHarvestZone = zone;
 
-    /// <summary>
-    /// Triggered by the UI Button to upgrade income of the active zone.
-    /// </summary>
     public void TriggerActiveIncomeUpgrade()
     {
-        if (activeHarvestZone != null)
-        {
-            activeHarvestZone.UpgradeIncome();
-        }
+        if (activeHarvestZone != null) activeHarvestZone.UpgradeIncome();
     }
 
-    /// <summary>
-    /// Triggered by the UI Button to upgrade speed of the active zone.
-    /// </summary>
     public void TriggerActiveSpeedUpgrade()
     {
-        if (activeHarvestZone != null)
-        {
-            activeHarvestZone.UpgradeHarvestSpeed();
-        }
+        if (activeHarvestZone != null) activeHarvestZone.UpgradeHarvestSpeed();
     }
 
-    /// <summary>
-    /// Triggered by the UI Button to purchase a new tree in the active zone.
-    /// </summary>
     public void TriggerActiveAddNewTree()
     {
-        if (activeHarvestZone != null)
-        {
-            activeHarvestZone.AddNewTree();
-        }
+        if (activeHarvestZone != null) activeHarvestZone.AddNewTree();
     }
 }

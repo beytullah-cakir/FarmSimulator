@@ -3,10 +3,7 @@ using UnityEngine;
 
 public class StandInventory : MonoBehaviour
 {
-    [Header("Stand Capacity")]
     [SerializeField] private int maxCapacity = 50;
-
-    [Header("State")]
     [SerializeField] private List<StandItem> storedItems = new List<StandItem>();
 
     [System.Serializable]
@@ -30,38 +27,25 @@ public class StandInventory : MonoBehaviour
         get
         {
             int count = 0;
-            foreach (var item in storedItems)
-            {
-                count += item.amount;
-            }
+            foreach (var item in storedItems) count += item.amount;
             return count;
         }
     }
 
-    public bool CanStoreMore()
-    {
-        return CurrentCount < maxCapacity;
-    }
+    public bool CanStoreMore() => CurrentCount < maxCapacity;
 
     public int AddFruit(FruitData fruit, int amount)
     {
         if (amount <= 0 || fruit == null) return 0;
 
-        int spaceAvailable = Mathf.Max(0, maxCapacity - CurrentCount);
-        int amountToAdd = Mathf.Min(amount, spaceAvailable);
+        int amountToAdd = Mathf.Min(amount, Mathf.Max(0, maxCapacity - CurrentCount));
+        if (amountToAdd <= 0) return 0;
 
-        if (amountToAdd > 0)
-        {
-            StandItem existingItem = storedItems.Find(item => item.fruit == fruit);
-            if (existingItem != null)
-            {
-                existingItem.amount += amountToAdd;
-            }
-            else
-            {
-                storedItems.Add(new StandItem(fruit, amountToAdd));
-            }
-        }
+        StandItem existingItem = storedItems.Find(item => item.fruit == fruit);
+        if (existingItem != null)
+            existingItem.amount += amountToAdd;
+        else
+            storedItems.Add(new StandItem(fruit, amountToAdd));
 
         return amountToAdd;
     }
@@ -71,20 +55,12 @@ public class StandInventory : MonoBehaviour
         if (fruit == null || amount <= 0) return false;
 
         StandItem item = storedItems.Find(i => i.fruit == fruit);
-        if (item != null && item.amount >= amount)
-        {
-            item.amount -= amount;
-            if (item.amount <= 0)
-            {
-                storedItems.Remove(item);
-            }
-            return true;
-        }
-        return false;
+        if (item == null || item.amount < amount) return false;
+
+        item.amount -= amount;
+        if (item.amount <= 0) storedItems.Remove(item);
+        return true;
     }
 
-    public void ClearStand()
-    {
-        storedItems.Clear();
-    }
+    public void ClearStand() => storedItems.Clear();
 }

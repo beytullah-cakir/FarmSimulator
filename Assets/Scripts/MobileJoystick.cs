@@ -32,9 +32,7 @@ public class JoystickTouchZone : Image
         {
             if (result.gameObject != gameObject &&
                 (joystick == null || (!result.gameObject.transform.IsChildOf(joystick.transform) && result.gameObject != joystick.gameObject)))
-            {
                 return false;
-            }
         }
         return true;
     }
@@ -44,11 +42,8 @@ public class MobileJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, 
 {
     public static MobileJoystick Instance { get; private set; }
 
-    [Header("Joystick UI Elements")]
     [SerializeField] private RectTransform background;
     [SerializeField] private RectTransform handle;
-
-    [Header("Settings")]
     [SerializeField] private float dragRange = 100f;
 
     private Canvas canvas;
@@ -59,9 +54,7 @@ public class MobileJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, 
     private void Awake()
     {
         if (Instance == null)
-        {
             Instance = this;
-        }
         else
         {
             Destroy(gameObject);
@@ -69,22 +62,16 @@ public class MobileJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, 
         }
 
         canvas = GetComponentInParent<Canvas>();
-        if (canvas == null)
-        {
-            Debug.LogError("MobileJoystick must be placed inside a Canvas to function correctly.");
-        }
-        else if (canvas.renderMode == RenderMode.ScreenSpaceCamera)
-        {
+        if (canvas != null && canvas.renderMode == RenderMode.ScreenSpaceCamera)
             uiCamera = canvas.worldCamera;
-        }
 
         Graphic graphic = GetComponent<Graphic>();
-        if (graphic != null && !(graphic is JoystickTouchZone))
+        if (graphic != null && graphic is not JoystickTouchZone)
         {
-            if (graphic is Image)
+            if (graphic is Image img)
             {
-                Color oldColor = ((Image)graphic).color;
-                Sprite oldSprite = ((Image)graphic).sprite;
+                Color oldColor = img.color;
+                Sprite oldSprite = img.sprite;
                 DestroyImmediate(graphic);
 
                 JoystickTouchZone touchZone = gameObject.AddComponent<JoystickTouchZone>();
@@ -99,23 +86,15 @@ public class MobileJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, 
             touchZone.Setup(this);
         }
 
-        if (background != null)
-        {
-            background.gameObject.SetActive(false);
-        }
+        if (background != null) background.gameObject.SetActive(false);
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
         if (background == null || handle == null) return;
 
-        Vector3 worldPoint;
         if (RectTransformUtility.ScreenPointToWorldPointInRectangle(
-            background.parent as RectTransform,
-            eventData.position,
-            uiCamera,
-            out worldPoint
-        ))
+            background.parent as RectTransform, eventData.position, uiCamera, out Vector3 worldPoint))
         {
             background.position = worldPoint;
             background.gameObject.SetActive(true);
@@ -128,20 +107,12 @@ public class MobileJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, 
     {
         if (background == null || handle == null || !background.gameObject.activeSelf) return;
 
-        Vector2 localPoint;
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            background,
-            eventData.position,
-            uiCamera,
-            out localPoint
-        ))
+            background, eventData.position, uiCamera, out Vector2 localPoint))
         {
-            float distance = localPoint.magnitude;
             Vector2 direction = localPoint.normalized;
-
-            float clampedDistance = Mathf.Min(distance, dragRange);
+            float clampedDistance = Mathf.Min(localPoint.magnitude, dragRange);
             handle.anchoredPosition = direction * clampedDistance;
-
             InputDirection = direction * (clampedDistance / dragRange);
         }
     }
@@ -149,22 +120,12 @@ public class MobileJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, 
     public void OnPointerUp(PointerEventData eventData)
     {
         InputDirection = Vector2.zero;
-        if (handle != null)
-        {
-            handle.anchoredPosition = Vector2.zero;
-        }
-
-        if (background != null)
-        {
-            background.gameObject.SetActive(false);
-        }
+        if (handle != null) handle.anchoredPosition = Vector2.zero;
+        if (background != null) background.gameObject.SetActive(false);
     }
 
     private void OnDestroy()
     {
-        if (Instance == this)
-        {
-            Instance = null;
-        }
+        if (Instance == this) Instance = null;
     }
 }

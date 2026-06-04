@@ -343,9 +343,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFruitUI
   playerInventory: {fileID: 8918636002676240162}
-  listContainer: {fileID: 670664779248694312}
-  fruitPanelPrefab: {fileID: 8946248928164403448, guid: a9878159e3e87fc4192d3198eb89b514, type: 3}
-  targetCanvas: {fileID: 6513555385350606281}
+  fruitListParent: {fileID: 670664779248694312}
+  fruitUIPrefab: {fileID: 8946248928164403448, guid: a9878159e3e87fc4192d3198eb89b514, type: 3}
 --- !u!114 &8693198085338575100
 MonoBehaviour:
   m_ObjectHideFlags: 0
