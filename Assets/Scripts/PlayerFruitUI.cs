@@ -12,8 +12,7 @@ public class PlayerFruitUI : MonoBehaviour
     [Header("Prefab")]
     [SerializeField] private GameObject fruitPanelPrefab;
 
-    [Header("Camera Facing (Billboard)")]
-    [SerializeField] private bool billboardToCamera = true;
+
     [SerializeField] private Canvas targetCanvas;
 
     private List<GameObject> activePanels = new List<GameObject>();
@@ -29,37 +28,6 @@ public class PlayerFruitUI : MonoBehaviour
             }
         }
 
-        if (playerInventory == null)
-        {
-            }
-
-        if (targetCanvas == null)
-        {
-            targetCanvas = GetComponentInChildren<Canvas>();
-            if (targetCanvas == null)
-            {
-                targetCanvas = GetComponentInParent<Canvas>();
-            }
-        }
-
-        if (listContainer == null && targetCanvas != null)
-        {
-            listContainer = targetCanvas.GetComponent<RectTransform>();
-        }
-
-        if (billboardToCamera)
-        {
-            Transform billboardTarget = targetCanvas != null ? targetCanvas.transform : listContainer;
-            if (billboardTarget != null)
-            {
-                BillboardUI billboard = billboardTarget.GetComponent<BillboardUI>();
-                if (billboard == null)
-                {
-                    billboard = billboardTarget.gameObject.AddComponent<BillboardUI>();
-                }
-                billboard.BillboardToCamera = true;
-            }
-        }
     }
 
     private void Start()
@@ -93,7 +61,7 @@ public class PlayerFruitUI : MonoBehaviour
             if (carriedItem.fruit == null || carriedItem.amount <= 0) continue;
 
             GameObject panelInstance = Instantiate(fruitPanelPrefab, listContainer, false);
-            
+
             if (panelInstance != null)
             {
                 activePanels.Add(panelInstance);
@@ -119,5 +87,12 @@ public class PlayerFruitUI : MonoBehaviour
             }
         }
         activePanels.Clear();
+    }
+
+    BillboardUI billboardUI;
+    void LateUpdate()
+    {
+        billboardUI = GetComponentInParent<BillboardUI>();
+        billboardUI.MainCode();
     }
 }

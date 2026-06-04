@@ -70,7 +70,7 @@ public class UIManager : MonoBehaviour
     public void UpdateUpgradeUI(
         int currentIncome, int nextIncome, int incomeLevel, int maxIncomeLevel, int incomeUpgradeCost,
         float currentHarvestDuration, float nextDuration, int speedLevel, int maxSpeedLevel, int speedUpgradeCost,
-        int treeLevel, int treePurchaseCost, bool treeMaxed)
+        int activeTrees, int maxTrees, int treePurchaseCost, bool treeMaxed)
     {
         // --- Income Upgrade ---
         if (fruitIncomeText != null)
@@ -107,7 +107,7 @@ public class UIManager : MonoBehaviour
             buyTreeCostText.text = treeMaxed ? "MAX" : treePurchaseCost.ToString();
 
         if (treeLevelText != null)
-            treeLevelText.text = treeMaxed ? "Lv MAX" : $"Lv {treeLevel}";
+            treeLevelText.text = $"{activeTrees}/{maxTrees}";
     }
 
     private HarvestZone activeHarvestZone;

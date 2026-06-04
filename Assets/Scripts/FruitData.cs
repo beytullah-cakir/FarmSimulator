@@ -11,13 +11,21 @@ public class FruitData : ScriptableObject
 
     [SerializeField] private Sprite fruitIcon;
 
+    [SerializeField] private float regrowthDuration = 10f;
+
     public string FruitName => fruitName;
     public int BasePrice => basePrice;
     public GameObject FruitPrefab => fruitPrefab;
     public Sprite FruitIcon => fruitIcon;
+    public float RegrowthDuration => regrowthDuration;
 
     public void SetBasePrice(int price)
     {
         basePrice = price;
+    }
+
+    public void SetRegrowthDuration(float duration)
+    {
+        regrowthDuration = duration;
     }
 }

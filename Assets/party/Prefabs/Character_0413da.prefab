@@ -574,6 +574,7 @@ GameObject:
   - component: {fileID: 9018468467961374774}
   - component: {fileID: 7892156225627128246}
   - component: {fileID: 7582830499631432352}
+  - component: {fileID: 3610614639943675074}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -703,6 +704,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 2
   m_VerticalFit: 2
+--- !u!114 &3610614639943675074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3747074224641029605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a71e4aa6b172724394de02f16b7cada, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BillboardUI
 --- !u!1 &4151792462194804699
 GameObject:
   m_ObjectHideFlags: 0
@@ -872,14 +885,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c22771f4ff5fd44f864527d70bbbd75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Customer
-  possibleFruits: []
-  minQuantity: 1
-  maxQuantity: 5
-  overheadCanvas: {fileID: 0}
-  uiParentContainer: {fileID: 2320040684971721231}
+  minFruitTypes: 1
+  maxFruitTypes: 3
+  minQuantity: 4
+  maxQuantity: 10
+  overheadCanvas: {fileID: 5352155277760317294}
   fruitPanelPrefab: {fileID: 8946248928164403448, guid: a9878159e3e87fc4192d3198eb89b514, type: 3}
-  requestUIElement: {fileID: 0}
-  billboardToCamera: 1
 --- !u!114 &-1627002764798662905
 MonoBehaviour:
   m_ObjectHideFlags: 0
