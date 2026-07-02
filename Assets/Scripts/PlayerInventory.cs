@@ -6,6 +6,7 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] private int maxCapacity = 10;
     [SerializeField] private List<CarriedItem> carriedItems = new List<CarriedItem>();
     [SerializeField] private int currentCarryCount = 0;
+    [SerializeField] private Canvas maxCanvas;
 
     public int MaxCapacity => maxCapacity;
     public int CurrentCarryCount => currentCarryCount;
@@ -24,6 +25,12 @@ public class PlayerInventory : MonoBehaviour
             this.fruit = fruit;
             this.amount = amount;
         }
+    }
+
+    private void Start()
+    {
+        if (maxCanvas != null)
+            maxCanvas.gameObject.SetActive(false);
     }
 
     public bool CanCarryMore() => currentCarryCount < maxCapacity;
@@ -45,6 +52,7 @@ public class PlayerInventory : MonoBehaviour
 
         currentCarryCount += amountToAdd;
         OnInventoryChanged?.Invoke();
+        UpdateMaxCanvas();
         return amountToAdd;
     }
 
@@ -61,6 +69,7 @@ public class PlayerInventory : MonoBehaviour
         if (item.amount <= 0) carriedItems.Remove(item);
 
         OnInventoryChanged?.Invoke();
+        UpdateMaxCanvas();
         return true;
     }
 
@@ -69,7 +78,14 @@ public class PlayerInventory : MonoBehaviour
         carriedItems.Clear();
         currentCarryCount = 0;
         OnInventoryChanged?.Invoke();
+        UpdateMaxCanvas();
     }
 
     public void UpgradeCapacity(int capacityIncrease) => maxCapacity += capacityIncrease;
+
+    private void UpdateMaxCanvas()
+    {
+        if (maxCanvas != null)
+            maxCanvas.gameObject.SetActive(!CanCarryMore());
+    }
 }

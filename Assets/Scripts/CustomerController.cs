@@ -97,6 +97,7 @@ public class CustomerController : MonoBehaviour
     public void ShowRequestUI()
     {
         if (customer == null) return;
+        customer.GenerateRandomOrder();
         customer.SetCanvasActive(true);
         customer.UpdateRequestUI();
     }
@@ -110,7 +111,7 @@ public class CustomerController : MonoBehaviour
     {
         currentState = CustomerState.Spawning;
         SetWalkingAnimation(false);
-        if (customer != null) customer.GenerateRandomOrder();
+        if (customer != null) customer.SetCanvasActive(false);
     }
 
     public CustomerState GetCurrentState() => currentState;

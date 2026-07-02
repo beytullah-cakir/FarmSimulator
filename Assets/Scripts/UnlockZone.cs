@@ -46,7 +46,9 @@ public class UnlockZone : MonoBehaviour, ISaveable
 
     private void OnTriggerEnter(Collider other)
     {
-        PlayerController player = other.GetComponent<PlayerController>();
+        PlayerController player = other.GetComponentInParent<PlayerController>();
+        if (player == null) return;
+
         activePlayer = player;
         isPlayerInside = true;
         UpdateCostUI();
@@ -55,6 +57,9 @@ public class UnlockZone : MonoBehaviour, ISaveable
 
     private void OnTriggerExit(Collider other)
     {
+        PlayerController player = other.GetComponentInParent<PlayerController>();
+        if (player == null || activePlayer != player) return;
+
         activePlayer = null;
         isPlayerInside = false;
         if (transferCoroutine != null)

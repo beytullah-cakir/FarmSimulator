@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Carrot
   m_EditorClassIdentifier: Assembly-CSharp::FruitData
   fruitName: Carrot
-  basePrice: 10
+  basePrice: 8
   fruitPrefab: {fileID: 773100764339979173, guid: 5710cc06e518ace4487a28241fcafd20, type: 3}
   fruitIcon: {fileID: -6009198046271197863, guid: 416d7ad4879a2ec4c99603e9260521e1, type: 3}
+  regrowthDuration: 10

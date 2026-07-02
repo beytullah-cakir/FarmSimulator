@@ -5,9 +5,10 @@ public class SaveData
 {
     public int playerMoney;
     public string saveDate;
-    public List<FruitSaveData> fruitStates = new List<FruitSaveData>();
-    public List<HarvestZoneSaveData> harvestZones = new List<HarvestZoneSaveData>();
-    public List<UnlockZoneSaveData> unlockZones = new List<UnlockZoneSaveData>();
+    public System.Collections.Generic.List<FruitSaveData> fruitStates = new System.Collections.Generic.List<FruitSaveData>();
+    public System.Collections.Generic.List<HarvestZoneSaveData> harvestZones = new System.Collections.Generic.List<HarvestZoneSaveData>();
+    public System.Collections.Generic.List<UnlockZoneSaveData> unlockZones = new System.Collections.Generic.List<UnlockZoneSaveData>();
+    public System.Collections.Generic.List<UpgradeEntrySaveData> upgradeEntries = new System.Collections.Generic.List<UpgradeEntrySaveData>();
 }
 
 [System.Serializable]
@@ -37,4 +38,16 @@ public class UnlockZoneSaveData
     public string saveID;
     public int currentInvestedMoney;
     public bool isUnlocked;
+}
+
+[System.Serializable]
+public class UpgradeEntrySaveData
+{
+    public string entryName;
+    public int incomeLevel;
+    public int speedLevel;
+    public int incomeUpgradeCost;
+    public int speedUpgradeCost;
+    public int treePurchaseCost;
+    public int activeTreeCount;
 }

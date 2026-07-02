@@ -35,7 +35,11 @@ public class Customer : MonoBehaviour
         uiParentContainer = overheadCanvas.GetComponent<RectTransform>();
     }
 
-    private void Start() => GenerateRandomOrder();
+    private void Start()
+    {
+        if (overheadCanvas != null)
+            overheadCanvas.gameObject.SetActive(false);
+    }
 
     void LateUpdate() => billboard.MainCode();
 

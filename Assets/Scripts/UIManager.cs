@@ -48,7 +48,7 @@ public class UIManager : MonoBehaviour
 
     public void UpdateMoneyDisplay(int currentMoney)
     {
-        if (moneyText != null) moneyText.text = currentMoney.ToString();
+        if (moneyText != null) moneyText.text = FormatUtility.FormatNumber(currentMoney);
     }
 
     public void UpdateUpgradeUI(
@@ -59,15 +59,15 @@ public class UIManager : MonoBehaviour
         if (fruitIncomeText != null)
         {
             fruitIncomeText.text = incomeLevel >= maxIncomeLevel
-                ? $"{currentIncome} <color=#f1c40f>(MAX)</color>"
-                : $"{currentIncome}-><color=#2ecc71>{nextIncome}</color>";
+                ? $"{FormatUtility.FormatNumber(currentIncome)} <color=#f1c40f>(MAX)</color>"
+                : $"{FormatUtility.FormatNumber(currentIncome)}-><color=#2ecc71>{FormatUtility.FormatNumber(nextIncome)}</color>";
         }
 
         if (incomeLevelText != null)
             incomeLevelText.text = incomeLevel >= maxIncomeLevel ? "Lv MAX" : $"Lv {incomeLevel}/{maxIncomeLevel}";
 
         if (incomeCostText != null)
-            incomeCostText.text = incomeLevel >= maxIncomeLevel ? "MAX" : incomeUpgradeCost.ToString();
+            incomeCostText.text = incomeLevel >= maxIncomeLevel ? "MAX" : FormatUtility.FormatNumber(incomeUpgradeCost);
 
         bool speedMaxed = speedLevel >= maxSpeedLevel || currentHarvestDuration <= 0.2f;
 
@@ -82,10 +82,10 @@ public class UIManager : MonoBehaviour
             speedLevelText.text = speedMaxed ? "Lv MAX" : $"Lv {speedLevel}/{maxSpeedLevel}";
 
         if (speedCostText != null)
-            speedCostText.text = speedMaxed ? "MAX" : speedUpgradeCost.ToString();
+            speedCostText.text = speedMaxed ? "MAX" : FormatUtility.FormatNumber(speedUpgradeCost);
 
         if (buyTreeCostText != null)
-            buyTreeCostText.text = treeMaxed ? "MAX" : treePurchaseCost.ToString();
+            buyTreeCostText.text = treeMaxed ? "MAX" : FormatUtility.FormatNumber(treePurchaseCost);
 
         if (treeLevelText != null)
             treeLevelText.text = $"{activeTrees}/{maxTrees}";
@@ -98,7 +98,7 @@ public class UIManager : MonoBehaviour
         var ui = unlockZoneUIs.Find(x => x.fruit == fruit);
         if (ui == null) return;
 
-        if (ui.costText != null) ui.costText.text = remainingCost.ToString();
+        if (ui.costText != null) ui.costText.text = FormatUtility.FormatNumber(remainingCost);
 
         if (ui.paymentSlider != null)
         {
@@ -112,16 +112,16 @@ public class UIManager : MonoBehaviour
 
     public void TriggerActiveIncomeUpgrade()
     {
-        if (activeHarvestZone != null) activeHarvestZone.UpgradeIncome();
+        if (UpgradeManager.Instance != null) UpgradeManager.Instance.UpgradeIncome();
     }
 
     public void TriggerActiveSpeedUpgrade()
     {
-        if (activeHarvestZone != null) activeHarvestZone.UpgradeHarvestSpeed();
+        if (UpgradeManager.Instance != null) UpgradeManager.Instance.UpgradeHarvestSpeed();
     }
 
     public void TriggerActiveAddNewTree()
     {
-        if (activeHarvestZone != null) activeHarvestZone.AddNewTree();
+        if (UpgradeManager.Instance != null) UpgradeManager.Instance.AddNewTree();
     }
 }

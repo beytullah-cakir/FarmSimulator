@@ -10,6 +10,6 @@ public class FruitUIElement : MonoBehaviour
     {
         fruitIconImage.sprite = icon;
         fruitIconImage.color = Color.white;
-        quantityText.text = $"x{amount}";
+        quantityText.text = $"x{FormatUtility.FormatNumber(amount)}";
     }
 }

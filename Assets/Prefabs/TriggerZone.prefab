@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 586260045154348889}
   - component: {fileID: 7577993489772734109}
   - component: {fileID: 8164200885275011166}
-  - component: {fileID: 4037817391550264883}
+  - component: {fileID: 4394852436083548463}
   m_Layer: 5
   m_Name: TriggerZone
   m_TagString: Untagged
@@ -161,7 +161,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &7577993489772734109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -200,7 +200,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4037817391550264883
+--- !u!114 &4394852436083548463
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -214,3 +214,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HarvestZone
   targetTrees: []
   harvestInterval: 0.2
+  upgradeButtonObject: {fileID: 0}

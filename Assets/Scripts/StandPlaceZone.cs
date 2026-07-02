@@ -20,7 +20,7 @@ public class StandPlaceZone : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        PlayerInventory inventory = other.GetComponent<PlayerInventory>();
+        PlayerInventory inventory = other.GetComponentInParent<PlayerInventory>();
         if (inventory == null) return;
 
         activeInventory = inventory;
@@ -30,7 +30,7 @@ public class StandPlaceZone : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        PlayerInventory inventory = other.GetComponent<PlayerInventory>();
+        PlayerInventory inventory = other.GetComponentInParent<PlayerInventory>();
         if (inventory == null || activeInventory != inventory) return;
 
         activeInventory = null;
@@ -54,6 +54,8 @@ public class StandPlaceZone : MonoBehaviour
                 if (activeInventory.RemoveFruit(fruitToPlace, 1))
                 {
                     reservedPlaceCount++;
+
+                    AudioManager.Instance?.PlaySFX(AudioManager.Instance.itemPickUp);
 
                     Vector3 spawnPos = activeInventory.transform.position + Vector3.up * 1f;
                     GameObject flyingFruit = null;
@@ -79,7 +81,6 @@ public class StandPlaceZone : MonoBehaviour
     {
         Vector3 startPos = fruitObj.transform.position;
         Quaternion startRot = Random.rotation;
-        Vector3 startScale = fruitObj.transform.localScale;
         float elapsed = 0f;
 
         Collider col = fruitObj.GetComponent<Collider>();
@@ -105,7 +106,6 @@ public class StandPlaceZone : MonoBehaviour
             fruitObj.transform.position = currentPos;
             fruitObj.transform.rotation = Quaternion.Slerp(startRot, standInventory.transform.rotation, t)
                 * Quaternion.Euler(t * 360f, t * 360f, 0f);
-            fruitObj.transform.localScale = Vector3.Lerp(startScale, startScale * 0.4f, t);
 
             yield return null;
         }

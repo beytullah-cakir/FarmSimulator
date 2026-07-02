@@ -108,10 +108,32 @@ public class SaveManager : MonoBehaviour
             {
                 object state = saveable.CaptureState();
 
-                if (state is HarvestZoneSaveData harvestData)
-                    data.harvestZones.Add(harvestData);
-                else if (state is UnlockZoneSaveData unlockData)
+                if (state is UnlockZoneSaveData unlockData)
                     data.unlockZones.Add(unlockData);
+            }
+        }
+
+        // Save UpgradeManager
+        if (UpgradeManager.Instance != null)
+        {
+            foreach (var entry in UpgradeManager.Instance.GetAllEntries())
+            {
+                int activeCount = 0;
+                foreach (var tree in entry.harvestZone.TargetTrees)
+                {
+                    if (tree != null && tree.gameObject.activeSelf) activeCount++;
+                }
+
+                data.upgradeEntries.Add(new UpgradeEntrySaveData
+                {
+                    entryName = entry.entryName,
+                    incomeLevel = entry.incomeLevel,
+                    speedLevel = entry.speedLevel,
+                    incomeUpgradeCost = entry.incomeUpgradeCost,
+                    speedUpgradeCost = entry.speedUpgradeCost,
+                    treePurchaseCost = entry.treePurchaseCost,
+                    activeTreeCount = activeCount
+                });
             }
         }
 
@@ -143,16 +165,44 @@ public class SaveManager : MonoBehaviour
             {
                 string id = saveable.SaveID;
 
-                HarvestZoneSaveData harvestMatch = data.harvestZones.Find(h => h.saveID == id);
-                if (harvestMatch != null)
-                {
-                    saveable.RestoreState(harvestMatch);
-                    continue;
-                }
-
                 UnlockZoneSaveData unlockMatch = data.unlockZones.Find(u => u.saveID == id);
                 if (unlockMatch != null)
                     saveable.RestoreState(unlockMatch);
+            }
+        }
+
+        // Restore UpgradeManager
+        if (UpgradeManager.Instance != null && data.upgradeEntries != null)
+        {
+            foreach (var savedEntry in data.upgradeEntries)
+            {
+                var entries = UpgradeManager.Instance.GetAllEntries();
+                var entry = entries.Find(e => e.entryName == savedEntry.entryName);
+                if (entry == null) continue;
+
+                entry.incomeLevel = savedEntry.incomeLevel;
+                entry.speedLevel = savedEntry.speedLevel;
+                entry.incomeUpgradeCost = savedEntry.incomeUpgradeCost;
+                entry.speedUpgradeCost = savedEntry.speedUpgradeCost;
+                entry.treePurchaseCost = savedEntry.treePurchaseCost;
+
+                for (int i = 0; i < entry.harvestZone.TargetTrees.Count; i++)
+                {
+                    if (entry.harvestZone.TargetTrees[i] != null)
+                        entry.harvestZone.TargetTrees[i].gameObject.SetActive(i < savedEntry.activeTreeCount);
+                }
+
+                if (entry.harvestZone.TargetTrees.Count > 0 && entry.harvestZone.TargetTrees[0] != null)
+                {
+                    FruitData fruit = entry.harvestZone.TargetTrees[0].FruitData;
+                    if (fruit != null)
+                    {
+                        foreach (Prop tree in entry.harvestZone.TargetTrees)
+                        {
+                            if (tree != null) tree.SetRegrowthDuration(fruit.RegrowthDuration);
+                        }
+                    }
+                }
             }
         }
     }

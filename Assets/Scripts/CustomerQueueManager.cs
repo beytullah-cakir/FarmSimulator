@@ -16,7 +16,7 @@ public class CustomerQueueManager : MonoBehaviour
     [SerializeField] private int maxQueueCapacity = 5;
     [SerializeField] private float distanceBetweenSpots = 1.3f;
     [SerializeField] private StandInventory standInventory;
-    [SerializeField] private float purchaseCheckInterval = 0.2f;
+    public float purchaseCheckInterval = 0.2f;
 
     private List<GameObject> customerPool = new List<GameObject>();
     private List<CustomerController> activeQueue = new List<CustomerController>();
@@ -172,7 +172,6 @@ public class CustomerQueueManager : MonoBehaviour
     {
         Vector3 startPos = fruitObj.transform.position;
         Quaternion startRot = Random.rotation;
-        Vector3 startScale = fruitObj.transform.localScale;
         float flightDuration = 0.5f;
         float arcHeight = 2.0f;
         float elapsed = 0f;
@@ -188,7 +187,6 @@ public class CustomerQueueManager : MonoBehaviour
 
             fruitObj.transform.position = currentPos;
             fruitObj.transform.rotation = startRot * Quaternion.Euler(t * 360f, t * 720f, 0f);
-            fruitObj.transform.localScale = Vector3.Lerp(startScale, startScale * 0.4f, t);
 
             yield return null;
         }

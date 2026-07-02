@@ -6,10 +6,6 @@ public class AudioManager : MonoBehaviour
 
     [Header("Audio Sources")]
     [SerializeField] private AudioSource sfxSource;
-    [SerializeField] private AudioSource musicSource;
-
-    [Header("Music")]
-    public AudioClip backgroundMusic;
 
     [Header("SFX")]
     public AudioClip itemPickUp;
@@ -20,7 +16,8 @@ public class AudioManager : MonoBehaviour
 
     [Header("Volume")]
     [Range(0f, 1f)][SerializeField] private float sfxVolume = 1f;
-    [Range(0f, 1f)][SerializeField] private float musicVolume = 0.5f;
+
+    private const string SFX_VOLUME_KEY = "SFXVolume";
 
     private void Awake()
     {
@@ -36,21 +33,12 @@ public class AudioManager : MonoBehaviour
             sfxSource = gameObject.AddComponent<AudioSource>();
             sfxSource.playOnAwake = false;
         }
-
-        if (musicSource == null)
-        {
-            musicSource = gameObject.AddComponent<AudioSource>();
-            musicSource.playOnAwake = false;
-            musicSource.loop = true;
-        }
     }
 
     private void Start()
     {
+        sfxVolume = PlayerPrefs.GetFloat(SFX_VOLUME_KEY, 1f);
         ApplyVolumes();
-
-        if (backgroundMusic != null)
-            PlayMusic(backgroundMusic);
     }
 
     public void PlaySFX(AudioClip clip)
@@ -59,34 +47,17 @@ public class AudioManager : MonoBehaviour
         sfxSource.PlayOneShot(clip, sfxVolume);
     }
 
-    public void PlayMusic(AudioClip clip)
-    {
-        if (clip == null || musicSource == null) return;
-
-        musicSource.clip = clip;
-        musicSource.Play();
-    }
-
-    public void StopMusic()
-    {
-        if (musicSource != null) musicSource.Stop();
-    }
-
     public void SetSFXVolume(float volume)
     {
         sfxVolume = Mathf.Clamp01(volume);
         if (sfxSource != null) sfxSource.volume = sfxVolume;
+        PlayerPrefs.SetFloat(SFX_VOLUME_KEY, sfxVolume);
     }
 
-    public void SetMusicVolume(float volume)
-    {
-        musicVolume = Mathf.Clamp01(volume);
-        if (musicSource != null) musicSource.volume = musicVolume;
-    }
+    public float GetSFXVolume() => sfxVolume;
 
     private void ApplyVolumes()
     {
         if (sfxSource != null) sfxSource.volume = sfxVolume;
-        if (musicSource != null) musicSource.volume = musicVolume;
     }
 }

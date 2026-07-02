@@ -16,3 +16,4 @@ MonoBehaviour:
   basePrice: 10
   fruitPrefab: {fileID: 891772234063362907, guid: a1f5656f666c7b44790a1e923f4542c8, type: 3}
   fruitIcon: {fileID: 4727633781103762509, guid: 45ab094653c66ba40a2ca337adf32ff4, type: 3}
+  regrowthDuration: 10

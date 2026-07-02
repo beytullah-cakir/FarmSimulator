@@ -2,30 +2,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HarvestZone : MonoBehaviour, ISaveable
+public class HarvestZone : MonoBehaviour
 {
-    [SerializeField] private string saveID = "harvest_zone_default";
     [SerializeField] private List<Prop> targetTrees = new List<Prop>();
     [SerializeField] private float harvestInterval = 0.2f;
     [SerializeField] private GameObject upgradeButtonObject;
-
-    [SerializeField] private int incomeUpgradeCost = 50;
-    [SerializeField] private int speedUpgradeCost = 50;
-    [SerializeField] private int treePurchaseCost = 150;
-
-    [SerializeField] private int incomeLevel = 0;
-    [SerializeField] private int maxIncomeLevel = 10;
-    [SerializeField] private int speedLevel = 0;
-    [SerializeField] private int maxSpeedLevel = 10;
-
-    public string SaveID => saveID;
 
     private PlayerInventory activeInventory;
     private Coroutine harvestCoroutine;
     private int reservedSpace = 0;
 
+    public List<Prop> TargetTrees => targetTrees;
+
     private void Start()
     {
+        if (upgradeButtonObject == null)
+        {
+            Transform btn = transform.Find("UpgradeButton");
+            if (btn == null)
+            {
+                foreach (Transform child in transform)
+                {
+                    if (child.name.ToLower().Contains("upgrade") || child.name.ToLower().Contains("button"))
+                    {
+                        upgradeButtonObject = child.gameObject;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                upgradeButtonObject = btn.gameObject;
+            }
+        }
+
         for (int i = 1; i < targetTrees.Count; i++)
         {
             if (targetTrees[i] != null)
@@ -44,53 +54,23 @@ public class HarvestZone : MonoBehaviour, ISaveable
 
     private void UpdateUpgradeButtonState()
     {
-        if (activeInventory != null && GetNextInactiveTreeIndex() != -1)
+        if (upgradeButtonObject == null) return;
+
+        if (activeInventory != null && UpgradeManager.Instance != null)
         {
-            upgradeButtonObject.SetActive(true);
-            return;
+            var entry = UpgradeManager.Instance.FindEntryByZone(this);
+            if (entry != null)
+            {
+                upgradeButtonObject.SetActive(true);
+                return;
+            }
         }
         upgradeButtonObject.SetActive(false);
     }
 
-    private void UpdateUpgradeUIDisplay()
-    {
-        if (UIManager.Instance == null) return;
-
-        FruitData fruit = targetTrees[0].FruitData;
-        if (fruit == null) return;
-
-        int currentIncome = fruit.BasePrice;
-        int nextIncome = currentIncome + 5;
-        float currentDuration = fruit.RegrowthDuration;
-        float nextDuration = Mathf.Max(0.2f, currentDuration - 0.5f);
-        bool treeMaxed = GetNextInactiveTreeIndex() == -1;
-
-        int activeTrees = 0;
-        foreach (var tree in targetTrees)
-        {
-            if (tree != null && tree.gameObject.activeSelf) activeTrees++;
-        }
-
-        UIManager.Instance.UpdateUpgradeUI(
-            currentIncome, nextIncome, incomeLevel, maxIncomeLevel, incomeUpgradeCost,
-            currentDuration, nextDuration, speedLevel, maxSpeedLevel, speedUpgradeCost,
-            activeTrees, targetTrees.Count, treePurchaseCost, treeMaxed
-        );
-    }
-
-    private int GetNextInactiveTreeIndex()
-    {
-        for (int i = 0; i < targetTrees.Count; i++)
-        {
-            if (targetTrees[i] != null && !targetTrees[i].gameObject.activeSelf)
-                return i;
-        }
-        return -1;
-    }
-
     private void OnTriggerEnter(Collider other)
     {
-        PlayerInventory inventory = other.GetComponent<PlayerInventory>();
+        PlayerInventory inventory = other.GetComponentInParent<PlayerInventory>();
         if (inventory == null) return;
 
         activeInventory = inventory;
@@ -98,8 +78,13 @@ public class HarvestZone : MonoBehaviour, ISaveable
         if (UIManager.Instance != null)
             UIManager.Instance.SetActiveHarvestZone(this);
 
+        if (UpgradeManager.Instance != null)
+        {
+            UpgradeManager.Instance.SetActiveEntry(this);
+            UpgradeManager.Instance.UpdateUpgradeUI();
+        }
+
         UpdateUpgradeButtonState();
-        UpdateUpgradeUIDisplay();
 
         if (harvestCoroutine != null) StopCoroutine(harvestCoroutine);
         harvestCoroutine = StartCoroutine(HarvestRoutine());
@@ -107,74 +92,24 @@ public class HarvestZone : MonoBehaviour, ISaveable
 
     private void OnTriggerExit(Collider other)
     {
-        PlayerInventory inventory = other.GetComponent<PlayerInventory>();
+        PlayerInventory inventory = other.GetComponentInParent<PlayerInventory>();
         if (activeInventory != inventory) return;
 
         activeInventory = null;
-        UIManager.Instance.SetActiveHarvestZone(null);
-        upgradeButtonObject.SetActive(false);
+
+        if (UIManager.Instance != null)
+            UIManager.Instance.SetActiveHarvestZone(null);
+
+        if (UpgradeManager.Instance != null)
+            UpgradeManager.Instance.SetActiveEntry(null);
+
+        if (upgradeButtonObject != null)
+            upgradeButtonObject.SetActive(false);
 
         if (harvestCoroutine != null)
         {
             StopCoroutine(harvestCoroutine);
             harvestCoroutine = null;
-        }
-    }
-
-    public void AddNewTree()
-    {
-        int nextIndex = GetNextInactiveTreeIndex();
-        if (GameManager.Instance == null || nextIndex == -1) return;
-        if (GameManager.Instance.PlayerMoney < treePurchaseCost) return;
-
-        if (GameManager.Instance.RemoveMoney(treePurchaseCost))
-        {
-            targetTrees[nextIndex].gameObject.SetActive(true);
-            treePurchaseCost += 50;
-            UpdateUpgradeUIDisplay();
-            AudioManager.Instance?.PlaySFX(AudioManager.Instance.cashPayment);
-        }
-    }
-
-    public void UpgradeIncome()
-    {
-        if (GameManager.Instance == null || incomeLevel >= maxIncomeLevel) return;
-        if (GameManager.Instance.PlayerMoney < incomeUpgradeCost) return;
-
-        FruitData fruit = targetTrees[0].FruitData;
-
-        if (GameManager.Instance.RemoveMoney(incomeUpgradeCost))
-        {
-            fruit.SetBasePrice(fruit.BasePrice + 5);
-            incomeLevel++;
-            incomeUpgradeCost += 25;
-            UpdateUpgradeUIDisplay();
-            AudioManager.Instance?.PlaySFX(AudioManager.Instance.cashPayment);
-        }
-    }
-
-    public void UpgradeHarvestSpeed()
-    {
-        if (GameManager.Instance == null || speedLevel >= maxSpeedLevel) return;
-        if (targetTrees[0].FruitData.RegrowthDuration <= 0.2f) return;
-        if (GameManager.Instance.PlayerMoney < speedUpgradeCost) return;
-
-        FruitData fruit = targetTrees[0].FruitData;
-
-        if (GameManager.Instance.RemoveMoney(speedUpgradeCost))
-        {
-            float newDuration = Mathf.Max(0.2f, fruit.RegrowthDuration - 0.5f);
-            fruit.SetRegrowthDuration(newDuration);
-            speedLevel++;
-
-            foreach (Prop tree in targetTrees)
-            {
-                if (tree != null) tree.SetRegrowthDuration(newDuration);
-            }
-
-            speedUpgradeCost += 25;
-            UpdateUpgradeUIDisplay();
-            AudioManager.Instance?.PlaySFX(AudioManager.Instance.cashPayment);
         }
     }
 
@@ -258,62 +193,4 @@ public class HarvestZone : MonoBehaviour, ISaveable
 
         AudioManager.Instance?.PlaySFX(AudioManager.Instance.itemPickUp);
     }
-
-    #region ISaveable
-
-    public object CaptureState()
-    {
-        int activeCount = 0;
-        foreach (var tree in targetTrees)
-        {
-            if (tree != null && tree.gameObject.activeSelf) activeCount++;
-        }
-
-        return new HarvestZoneSaveData
-        {
-            saveID = this.saveID,
-            incomeLevel = this.incomeLevel,
-            speedLevel = this.speedLevel,
-            incomeUpgradeCost = this.incomeUpgradeCost,
-            speedUpgradeCost = this.speedUpgradeCost,
-            treePurchaseCost = this.treePurchaseCost,
-            activeTreeCount = activeCount
-        };
-    }
-
-    public void RestoreState(object state)
-    {
-        if (state is not HarvestZoneSaveData data) return;
-
-        incomeLevel = data.incomeLevel;
-        speedLevel = data.speedLevel;
-        incomeUpgradeCost = data.incomeUpgradeCost;
-        speedUpgradeCost = data.speedUpgradeCost;
-        treePurchaseCost = data.treePurchaseCost;
-
-        ActivateTreesByCount(data.activeTreeCount);
-
-        if (targetTrees.Count > 0 && targetTrees[0] != null)
-        {
-            FruitData fruit = targetTrees[0].FruitData;
-            if (fruit != null)
-            {
-                foreach (Prop tree in targetTrees)
-                {
-                    if (tree != null) tree.SetRegrowthDuration(fruit.RegrowthDuration);
-                }
-            }
-        }
-    }
-
-    private void ActivateTreesByCount(int count)
-    {
-        for (int i = 0; i < targetTrees.Count; i++)
-        {
-            if (targetTrees[i] != null)
-                targetTrees[i].gameObject.SetActive(i < count);
-        }
-    }
-
-    #endregion
 }
