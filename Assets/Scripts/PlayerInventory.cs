@@ -81,7 +81,11 @@ public class PlayerInventory : MonoBehaviour
         UpdateMaxCanvas();
     }
 
-    public void UpgradeCapacity(int capacityIncrease) => maxCapacity += capacityIncrease;
+    public void UpgradeCapacity(int capacityIncrease)
+    {
+        maxCapacity += capacityIncrease;
+        UpdateMaxCanvas();
+    }
 
     private void UpdateMaxCanvas()
     {

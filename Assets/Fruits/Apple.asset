@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Apple
   m_EditorClassIdentifier: Assembly-CSharp::FruitData
   fruitName: Apple
-  basePrice: 6
+  basePrice: 8
   fruitPrefab: {fileID: 4514278085259536871, guid: 0cad730571c338d48ad5f1a56a4e187d, type: 3}
   fruitIcon: {fileID: -3989417037294542392, guid: dc095ce8d2086f541bd26c7e3a71ef12, type: 3}
-  regrowthDuration: 9.5
+  regrowthDuration: 8.5

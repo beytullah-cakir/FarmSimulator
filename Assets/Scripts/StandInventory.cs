@@ -19,6 +19,15 @@ public class StandInventory : MonoBehaviour
         }
     }
 
+    [System.Serializable]
+    public class FruitBoxMapping
+    {
+        public FruitData fruit;
+        public GameObject boxObject;
+    }
+
+    [SerializeField] private List<FruitBoxMapping> fruitBoxes = new List<FruitBoxMapping>();
+
     public int MaxCapacity => maxCapacity;
     public List<StandItem> StoredItems => storedItems;
 
@@ -34,6 +43,26 @@ public class StandInventory : MonoBehaviour
 
     public bool CanStoreMore() => CurrentCount < maxCapacity;
 
+    private void Start()
+    {
+        UpdateBoxVisuals();
+    }
+
+    public void UpdateBoxVisuals()
+    {
+        if (fruitBoxes == null) return;
+
+        foreach (var mapping in fruitBoxes)
+        {
+            if (mapping == null || mapping.boxObject == null) continue;
+
+            StandItem item = storedItems.Find(i => i.fruit == mapping.fruit);
+            bool hasFruit = (item != null && item.amount > 0);
+
+            mapping.boxObject.SetActive(hasFruit);
+        }
+    }
+
     public int AddFruit(FruitData fruit, int amount)
     {
         if (amount <= 0 || fruit == null) return 0;
@@ -47,6 +76,8 @@ public class StandInventory : MonoBehaviour
         else
             storedItems.Add(new StandItem(fruit, amountToAdd));
 
+        UpdateBoxVisuals();
+
         return amountToAdd;
     }
 
@@ -59,8 +90,15 @@ public class StandInventory : MonoBehaviour
 
         item.amount -= amount;
         if (item.amount <= 0) storedItems.Remove(item);
+
+        UpdateBoxVisuals();
+
         return true;
     }
 
-    public void ClearStand() => storedItems.Clear();
+    public void ClearStand()
+    {
+        storedItems.Clear();
+        UpdateBoxVisuals();
+    }
 }
