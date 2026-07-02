@@ -135,6 +135,12 @@ public class CustomerQueueManager : MonoBehaviour
 
             if (activeQueue.Count == 0) continue;
 
+            if (standInventory != null && standInventory.PlaceZone != null)
+            {
+                if (standInventory.PlaceZone.IsPlayerPlacing)
+                    continue;
+            }
+
             CustomerController activeController = activeQueue[0];
             if (activeController == null || activeController.GetCurrentState() != CustomerController.CustomerState.AtRegister)
                 continue;

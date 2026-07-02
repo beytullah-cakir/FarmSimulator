@@ -28,6 +28,8 @@ public class StandInventory : MonoBehaviour
 
     [SerializeField] private List<FruitBoxMapping> fruitBoxes = new List<FruitBoxMapping>();
 
+    public StandPlaceZone PlaceZone { get; set; }
+
     public int MaxCapacity => maxCapacity;
     public List<StandItem> StoredItems => storedItems;
 

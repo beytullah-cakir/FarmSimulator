@@ -9,6 +9,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4674064153482052005, guid: 0e80a0cd28764524ab23b2965cab0398, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4674064153482052005, guid: 0e80a0cd28764524ab23b2965cab0398, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4674064153482052005, guid: 0e80a0cd28764524ab23b2965cab0398, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4674064153482052005, guid: 0e80a0cd28764524ab23b2965cab0398, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -50,7 +62,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5446624610522962719, guid: 0e80a0cd28764524ab23b2965cab0398, type: 3}
       propertyPath: m_Name
-      value: food_Orange
+      value: Orange_prefab
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

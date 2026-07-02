@@ -12,10 +12,31 @@ public class StandPlaceZone : MonoBehaviour
     private Coroutine placeCoroutine;
     private int reservedPlaceCount = 0;
 
+    public bool IsPlayerPlacing
+    {
+        get
+        {
+            if (reservedPlaceCount > 0) return true;
+
+            if (activeInventory != null && activeInventory.CurrentCarryCount > 0)
+            {
+                if (standInventory != null && standInventory.CurrentCount < standInventory.MaxCapacity)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
     private void Start()
     {
         if (standInventory == null)
             standInventory = GetComponentInParent<StandInventory>();
+
+        if (standInventory != null)
+            standInventory.PlaceZone = this;
     }
 
     private void OnTriggerEnter(Collider other)

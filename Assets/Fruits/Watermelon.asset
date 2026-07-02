@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FruitData
   fruitName: Watermelon
   basePrice: 10
-  fruitPrefab: {fileID: 891772234063362907, guid: a1f5656f666c7b44790a1e923f4542c8, type: 3}
-  fruitIcon: {fileID: 4727633781103762509, guid: 45ab094653c66ba40a2ca337adf32ff4, type: 3}
+  fruitPrefab: {fileID: 3497643691110187984, guid: cad45cb51663bad4aa4eec941d836ead, type: 3}
+  fruitIcon: {fileID: 21300000, guid: a4822d008712e02409c12034e8bbe37a, type: 3}
   regrowthDuration: 10

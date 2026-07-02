@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FruitData
   fruitName: Orange
   basePrice: 5
-  fruitPrefab: {fileID: 5446624610522962719, guid: 0e80a0cd28764524ab23b2965cab0398, type: 3}
+  fruitPrefab: {fileID: 6726117339123613215, guid: aff2f6fd2a38f63448a1ef6660f42e0a, type: 3}
   fruitIcon: {fileID: -6410442598547967069, guid: b26193825d007d7419f7e53259af7102, type: 3}
   regrowthDuration: 10

@@ -72,6 +72,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: food_Carrot
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: cdd74c5fa1d9ead459d3d3906f9117f0, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

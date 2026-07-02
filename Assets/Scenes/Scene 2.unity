@@ -9908,6 +9908,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1414515180}
     - target: {fileID: 4394852436083548463, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
+      propertyPath: harvestInterval
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4394852436083548463, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
       propertyPath: upgradeButtonObject
       value: 
       objectReference: {fileID: 6509555964067524743}
@@ -22088,31 +22092,61 @@ MonoBehaviour:
     incomeUpgradeCost: 50
     incomeLevel: 1
     maxIncomeLevel: 10
-    incomeCostIncrement: 50
+    incomeCostIncrement: 150
     incomeValueIncrement: 3
     speedUpgradeCost: 100
     speedLevel: 1
     maxSpeedLevel: 10
-    speedCostIncrement: 100
+    speedCostIncrement: 300
     speedReduction: 0.2
     minHarvestDuration: 0.2
     treePurchaseCost: 1000
-    treeCostIncrement: 1500
+    treeCostIncrement: 2000
   - entryName: Orange
     harvestZone: {fileID: 0}
     incomeUpgradeCost: 100
     incomeLevel: 1
     maxIncomeLevel: 10
-    incomeCostIncrement: 100
+    incomeCostIncrement: 300
     incomeValueIncrement: 3
     speedUpgradeCost: 150
     speedLevel: 1
     maxSpeedLevel: 10
-    speedCostIncrement: 150
+    speedCostIncrement: 450
     speedReduction: 0.2
     minHarvestDuration: 0.2
     treePurchaseCost: 1500
-    treeCostIncrement: 2000
+    treeCostIncrement: 3000
+  - entryName: Carrot
+    harvestZone: {fileID: 0}
+    incomeUpgradeCost: 150
+    incomeLevel: 1
+    maxIncomeLevel: 10
+    incomeCostIncrement: 450
+    incomeValueIncrement: 3
+    speedUpgradeCost: 200
+    speedLevel: 1
+    maxSpeedLevel: 10
+    speedCostIncrement: 600
+    speedReduction: 0.2
+    minHarvestDuration: 0.2
+    treePurchaseCost: 2000
+    treeCostIncrement: 4000
+  - entryName: Watermelon
+    harvestZone: {fileID: 0}
+    incomeUpgradeCost: 250
+    incomeLevel: 1
+    maxIncomeLevel: 10
+    incomeCostIncrement: 750
+    incomeValueIncrement: 3
+    speedUpgradeCost: 300
+    speedLevel: 1
+    maxSpeedLevel: 10
+    speedCostIncrement: 900
+    speedReduction: 0.2
+    minHarvestDuration: 0.2
+    treePurchaseCost: 2500
+    treeCostIncrement: 5000
 --- !u!4 &1376307423
 Transform:
   m_ObjectHideFlags: 0
@@ -24140,6 +24174,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1157523913}
     - target: {fileID: 4394852436083548463, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
+      propertyPath: harvestInterval
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4394852436083548463, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
       propertyPath: upgradeButtonObject
       value: 
       objectReference: {fileID: 6509555964067524743}
@@ -24805,6 +24843,10 @@ PrefabInstance:
       propertyPath: 'targetTrees.Array.data[0]'
       value: 
       objectReference: {fileID: 2105947000}
+    - target: {fileID: 4394852436083548463, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
+      propertyPath: harvestInterval
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 4394852436083548463, guid: 843c2303b01436c4d9234e5f26cf853a, type: 3}
       propertyPath: upgradeButtonObject
       value: 
