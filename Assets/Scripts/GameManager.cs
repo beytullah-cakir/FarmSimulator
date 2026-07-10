@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Services.Core;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class GameManager : MonoBehaviour
     }
 
     [SerializeField] private List<FruitActivationSetting> fruitSettings = new();
+    [SerializeField] private string appKey = "YOUR_APP_KEY";
 
     private int playerMoney = 0;
 
