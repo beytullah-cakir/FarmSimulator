@@ -9,6 +9,10 @@ public class RewardedAdsManager : MonoBehaviour
 
     public static RewardedAdsManager Instance;
 
+    // Callback'ler – her ShowRewarded çağrısında set edilir
+    private System.Action onRewardedCallback;
+    private System.Action onClosedCallback;
+
     private void Awake()
     {
         Instance = this;
@@ -48,8 +52,11 @@ public class RewardedAdsManager : MonoBehaviour
         rewardedAd.LoadAd();
     }
 
-    public void ShowRewarded()
+    public void ShowRewarded(System.Action onRewarded = null, System.Action onClosed = null)
     {
+        onRewardedCallback = onRewarded;
+        onClosedCallback = onClosed;
+
         if (rewardedAd.IsAdReady())
         {
             rewardedAd.ShowAd();
@@ -57,6 +64,8 @@ public class RewardedAdsManager : MonoBehaviour
         else
         {
             Debug.Log("Rewarded ad is not ready.");
+            // Hazır değilse yükle ve bir sonraki aşamaya geç
+            LoadRewarded();
         }
     }
 
@@ -85,14 +94,15 @@ public class RewardedAdsManager : MonoBehaviour
     private void OnAdRewarded(LevelPlayAdInfo info, LevelPlayReward reward)
     {
         Debug.Log("🎉 User earned reward!");
-
-        // Buraya coin verme kodunu yazacağız.
-        // CoinManager.Instance.AddCoin(50);
+        onRewardedCallback?.Invoke();
+        onRewardedCallback = null;
     }
 
     private void OnAdClosed(LevelPlayAdInfo info)
     {
         Debug.Log("Rewarded Closed");
+        onClosedCallback?.Invoke();
+        onClosedCallback = null;
 
         // Bir sonraki reklamı hazırla
         rewardedAd.LoadAd();

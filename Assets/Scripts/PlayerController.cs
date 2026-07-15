@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -12,6 +13,9 @@ public class PlayerController : MonoBehaviour
     private Vector3 inputDirection;
     private readonly int runHash = Animator.StringToHash("Run");
 
+    private float   baseSpeed;           // Baslangic hizi
+    private Coroutine speedBoostRoutine; // Aktif boost coroutine
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -20,6 +24,8 @@ public class PlayerController : MonoBehaviour
 
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
+
+        baseSpeed = moveSpeed; // Baslangic hizini kaydet
     }
 
     private void OnEnable() => playerInputActions.Enable();
@@ -82,5 +88,27 @@ public class PlayerController : MonoBehaviour
             if (rb != null) rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
             if (animator != null) animator.SetBool(runHash, false);
         }
+    }
+
+    /// <summary>
+    /// Oyuncuya gecici hiz boostu uygular.
+    /// Aktif boost varsa sure sifirlanarak yeniden baslar.
+    /// </summary>
+    public void ApplySpeedBoost(float multiplier, float duration)
+    {
+        if (speedBoostRoutine != null) StopCoroutine(speedBoostRoutine);
+        speedBoostRoutine = StartCoroutine(SpeedBoostRoutine(multiplier, duration));
+    }
+
+    private IEnumerator SpeedBoostRoutine(float multiplier, float duration)
+    {
+        moveSpeed = baseSpeed * multiplier;
+        Debug.Log($"[PlayerController] Hiz boostu aktif: {moveSpeed} ({duration}s)");
+
+        yield return new WaitForSeconds(duration);
+
+        moveSpeed = baseSpeed;
+        speedBoostRoutine = null;
+        Debug.Log("[PlayerController] Hiz boostu sona erdi.");
     }
 }

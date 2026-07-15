@@ -137,7 +137,11 @@ public class Customer : MonoBehaviour
 
     private void OnOrderCompleted()
     {
-        GameManager.Instance.AddMoney(totalOrderPrice);
+        // IncomeMultiplier aktifse (ornek: 2x reklam boostu) geliri carparak ekle
+        float multiplier = GameManager.Instance != null ? GameManager.Instance.IncomeMultiplier : 1f;
+        int finalPrice = Mathf.RoundToInt(totalOrderPrice * multiplier);
+
+        GameManager.Instance.AddMoney(finalPrice);
         AudioManager.Instance?.PlaySFX(AudioManager.Instance.cashPayment);
         CustomerQueueManager.Instance.OnCustomerServed(GetComponent<CustomerController>());
     }

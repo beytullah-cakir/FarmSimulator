@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Services.Core;
@@ -19,6 +20,11 @@ public class GameManager : MonoBehaviour
     private int playerMoney = 0;
 
     public int PlayerMoney => playerMoney;
+
+    // ─── Gelir carpani ────────────────────────────────────────────────────────
+    public float IncomeMultiplier { get; private set; } = 1f;
+    private Coroutine incomeBoostRoutine;
+    // ─────────────────────────────────────────────────────────────────────────
 
     public event System.Action<int> OnMoneyChanged;
 
@@ -45,6 +51,28 @@ public class GameManager : MonoBehaviour
     {
         playerMoney = Mathf.Max(0, amount);
         OnMoneyChanged?.Invoke(playerMoney);
+    }
+
+    /// <summary>
+    /// Gelir carpanini gecici olarak uygular.
+    /// Aktif carpan varsa sure sifirlanarak yeniden baslar.
+    /// </summary>
+    public void ApplyIncomeMultiplier(float multiplier, float duration)
+    {
+        if (incomeBoostRoutine != null) StopCoroutine(incomeBoostRoutine);
+        incomeBoostRoutine = StartCoroutine(IncomeBoostRoutine(multiplier, duration));
+    }
+
+    private IEnumerator IncomeBoostRoutine(float multiplier, float duration)
+    {
+        IncomeMultiplier = multiplier;
+        Debug.Log($"[GameManager] Gelir carpani aktif: {multiplier}x ({duration}s)");
+
+        yield return new WaitForSeconds(duration);
+
+        IncomeMultiplier = 1f;
+        incomeBoostRoutine = null;
+        Debug.Log("[GameManager] Gelir carpani sona erdi.");
     }
 
     public List<FruitData> GetActiveFruits()
