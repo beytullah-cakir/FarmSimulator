@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 /// <summary>
 /// Reklam izlenince oyuncunun hizini gecici olarak arttirir.
@@ -8,6 +8,8 @@ public class SpeedBoostAdZone : BaseAdZone
     [Header("Speed Boost")]
     [SerializeField] private float speedMultiplier = 2f;   // Hiz carpani (ornek: 2x)
     [SerializeField] private float boostDuration   = 30f;  // Sn cinsinden sure
+
+    public override float GetBoostDuration() => boostDuration;
 
     protected override void GrantReward()
     {

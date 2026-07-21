@@ -7,9 +7,11 @@ public class SaveManager : MonoBehaviour
 {
     public static SaveManager Instance { get; private set; }
 
-    [SerializeField] private float autoSaveInterval = 60f;
+    [SerializeField] private float autoSaveInterval = 30f; // Her 30 saniyede bir otomatik kayit
 
     private const string SAVE_FILE_NAME = "savegame.json";
+
+    private bool hasSaved = false; // Tekrar eden kaydi onler
 
     private void Awake()
     {
@@ -19,6 +21,7 @@ public class SaveManager : MonoBehaviour
             return;
         }
         Instance = this;
+        DontDestroyOnLoad(gameObject); // Sahne gecislerinde yok edilmez
     }
 
     private void Start()
@@ -27,14 +30,48 @@ public class SaveManager : MonoBehaviour
 
         if (autoSaveInterval > 0f)
             StartCoroutine(AutoSaveRoutine());
+
+        // Para her degistiginde kaydet
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnMoneyChanged += OnMoneyChangedSave;
+    }
+
+    private void OnDestroy()
+    {
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnMoneyChanged -= OnMoneyChangedSave;
+    }
+
+    private void OnMoneyChangedSave(int newAmount)
+    {
+        SaveGame();
     }
 
     private void OnApplicationPause(bool pauseStatus)
     {
-        if (pauseStatus) SaveGame();
+        // Mobilde arka plana geçince kaydet
+        if (pauseStatus)
+        {
+            hasSaved = false;
+            SaveGame();
+        }
     }
 
-    private void OnApplicationQuit() => SaveGame();
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        // Odak kaybedilince kaydet (masaüstü çıkış, alt+tab vb.)
+        if (!hasFocus)
+        {
+            hasSaved = false;
+            SaveGame();
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        hasSaved = false;
+        SaveGame();
+    }
 
     public void SaveGame()
     {
@@ -42,14 +79,16 @@ public class SaveManager : MonoBehaviour
         data.saveDate = System.DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
 
         string json = JsonUtility.ToJson(data, true);
+        string path = GetSavePath();
 
         try
         {
-            File.WriteAllText(GetSavePath(), json);
+            File.WriteAllText(path, json);
+            Debug.Log($"[SaveManager] Oyun kaydedildi: {path} ({data.saveDate})");
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"[SaveManager] Save error: {e.Message}");
+            Debug.LogError($"[SaveManager] Kayit hatasi: {e.Message}");
         }
     }
 

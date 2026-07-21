@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -16,8 +16,9 @@ public abstract class BaseAdZone : MonoBehaviour
     [SerializeField] protected float fillDuration = 3f;
 
     [Header("UI References")]
-    [SerializeField] protected Canvas    worldCanvas;
-    [SerializeField] protected Slider    progressSlider;
+    [SerializeField] protected Canvas          worldCanvas;
+    [SerializeField] protected Slider          progressSlider;
+    [SerializeField] protected Slider          rewardCountdownSlider;
     [SerializeField] protected TextMeshProUGUI descriptionText;
 
     // ─── State ───────────────────────────────────────────────────────────────
@@ -37,6 +38,11 @@ public abstract class BaseAdZone : MonoBehaviour
 
         if (progressSlider == null && worldCanvas != null)
             progressSlider = worldCanvas.GetComponentInChildren<Slider>(true);
+
+        if (rewardCountdownSlider == null)
+            rewardCountdownSlider = progressSlider;
+        else if (rewardCountdownSlider != progressSlider)
+            rewardCountdownSlider.gameObject.SetActive(false);
 
         ResetSlider();
     }
@@ -126,7 +132,10 @@ public abstract class BaseAdZone : MonoBehaviour
 
     private void OnAdClosed() => Destroy(gameObject);
 
-    // ─── Abstract API ────────────────────────────────────────────────────────
+    // ─── Abstract & Virtual API ──────────────────────────────────────────────
+
+    /// <summary>Sureli ad zone'lar icin boost suresini doner.</summary>
+    public virtual float GetBoostDuration() => 0f;
 
     /// <summary>Alt siniflar bu metodu override ederek odul mantigi yazar.</summary>
     protected abstract void GrantReward();

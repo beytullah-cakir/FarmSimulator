@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 using Unity.Services.Core;
 
 public class GameManager : MonoBehaviour
@@ -16,6 +18,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private List<FruitActivationSetting> fruitSettings = new();
     [SerializeField] private string appKey = "YOUR_APP_KEY";
+    [SerializeField] private Slider incomeBoostSlider;
+    [SerializeField] private TextMeshProUGUI incomeBoostTimerText;
 
     private int playerMoney = 0;
 
@@ -65,6 +69,12 @@ public class GameManager : MonoBehaviour
 
     private void Awake() => Instance = this;
 
+    private void Start()
+    {
+        if (incomeBoostSlider != null) incomeBoostSlider.gameObject.SetActive(false);
+        if (incomeBoostTimerText != null) incomeBoostTimerText.gameObject.SetActive(false);
+    }
+
     public void AddMoney(int amount)
     {
         if (amount <= 0) return;
@@ -103,7 +113,41 @@ public class GameManager : MonoBehaviour
         IncomeMultiplier = multiplier;
         Debug.Log($"[GameManager] Gelir carpani aktif: {multiplier}x ({duration}s)");
 
-        yield return new WaitForSeconds(duration);
+        float remaining = duration;
+        while (remaining > 0f)
+        {
+            remaining -= Time.deltaTime;
+            float fill = Mathf.Clamp01(remaining / duration);
+
+            if (incomeBoostSlider != null)
+            {
+                incomeBoostSlider.gameObject.SetActive(true);
+                incomeBoostSlider.minValue = 0f;
+                incomeBoostSlider.maxValue = 1f;
+                incomeBoostSlider.value = fill;
+            }
+
+            if (incomeBoostTimerText != null)
+            {
+                incomeBoostTimerText.gameObject.SetActive(true);
+                incomeBoostTimerText.text = $"{Mathf.CeilToInt(remaining)}s";
+            }
+
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.UpdateIncomeBoostSlider(remaining, duration);
+            }
+
+            yield return null;
+        }
+
+        if (incomeBoostSlider != null) incomeBoostSlider.gameObject.SetActive(false);
+        if (incomeBoostTimerText != null) incomeBoostTimerText.gameObject.SetActive(false);
+
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.UpdateIncomeBoostSlider(0f, duration);
+        }
 
         IncomeMultiplier = 1f;
         incomeBoostRoutine = null;

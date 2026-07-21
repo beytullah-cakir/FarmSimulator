@@ -1,5 +1,7 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
@@ -7,11 +9,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float rotationSpeed = 10f;
     [SerializeField] private Animator animator;
+    [SerializeField] private Slider speedBoostSlider;
+    [SerializeField] private TextMeshProUGUI speedBoostTimerText;
 
     private Rigidbody rb;
     private PlayerInputActions playerInputActions;
     private Vector3 inputDirection;
-    private readonly int runHash = Animator.StringToHash("Run");
+    private readonly int walkHash = Animator.StringToHash("Walking");
+    private readonly int runHash = Animator.StringToHash("Running");
 
     private float   baseSpeed;           // Baslangic hizi
     private Coroutine speedBoostRoutine; // Aktif boost coroutine
@@ -26,6 +31,12 @@ public class PlayerController : MonoBehaviour
             animator = GetComponentInChildren<Animator>();
 
         baseSpeed = moveSpeed; // Baslangic hizini kaydet
+    }
+
+    private void Start()
+    {
+        if (speedBoostSlider != null) speedBoostSlider.gameObject.SetActive(false);
+        if (speedBoostTimerText != null) speedBoostTimerText.gameObject.SetActive(false);
     }
 
     private void OnEnable() => playerInputActions.Enable();
@@ -75,8 +86,20 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateAnimationState()
     {
-        if (animator != null)
-            animator.SetBool(runHash, inputDirection.magnitude >= 0.1f);
+        if (animator == null) return;
+
+        bool isMoving = inputDirection.magnitude >= 0.1f;
+        if (!isMoving)
+        {
+            animator.SetBool(walkHash, false);
+            animator.SetBool(runHash, false);
+        }
+        else
+        {
+            bool hasSpeedBoost = speedBoostRoutine != null || moveSpeed > baseSpeed;
+            animator.SetBool(walkHash, !hasSpeedBoost);
+            animator.SetBool(runHash, hasSpeedBoost);
+        }
     }
 
     public void SetInputActive(bool active)
@@ -86,7 +109,11 @@ public class PlayerController : MonoBehaviour
         {
             inputDirection = Vector3.zero;
             if (rb != null) rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
-            if (animator != null) animator.SetBool(runHash, false);
+            if (animator != null)
+            {
+                animator.SetBool(walkHash, false);
+                animator.SetBool(runHash, false);
+            }
         }
     }
 
@@ -105,7 +132,41 @@ public class PlayerController : MonoBehaviour
         moveSpeed = baseSpeed * multiplier;
         Debug.Log($"[PlayerController] Hiz boostu aktif: {moveSpeed} ({duration}s)");
 
-        yield return new WaitForSeconds(duration);
+        float remaining = duration;
+        while (remaining > 0f)
+        {
+            remaining -= Time.deltaTime;
+            float fill = Mathf.Clamp01(remaining / duration);
+
+            if (speedBoostSlider != null)
+            {
+                speedBoostSlider.gameObject.SetActive(true);
+                speedBoostSlider.minValue = 0f;
+                speedBoostSlider.maxValue = 1f;
+                speedBoostSlider.value = fill;
+            }
+
+            if (speedBoostTimerText != null)
+            {
+                speedBoostTimerText.gameObject.SetActive(true);
+                speedBoostTimerText.text = $"{Mathf.CeilToInt(remaining)}s";
+            }
+
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.UpdateSpeedBoostSlider(remaining, duration);
+            }
+
+            yield return null;
+        }
+
+        if (speedBoostSlider != null) speedBoostSlider.gameObject.SetActive(false);
+        if (speedBoostTimerText != null) speedBoostTimerText.gameObject.SetActive(false);
+
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.UpdateSpeedBoostSlider(0f, duration);
+        }
 
         moveSpeed = baseSpeed;
         speedBoostRoutine = null;

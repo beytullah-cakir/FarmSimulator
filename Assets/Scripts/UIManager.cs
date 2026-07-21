@@ -27,6 +27,14 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private System.Collections.Generic.List<UnlockZoneUI> unlockZoneUIs = new();
 
+    [Header("Ad & Boost Timers")]
+    [SerializeField] private Slider speedBoostSlider;
+    [SerializeField] private TextMeshProUGUI speedBoostTimerText;
+    [SerializeField] private Slider incomeBoostSlider;
+    [SerializeField] private TextMeshProUGUI incomeBoostTimerText;
+    [SerializeField] private Slider adBoostSlider;
+    [SerializeField] private TextMeshProUGUI adBoostTimerText;
+
     private HarvestZone activeHarvestZone;
 
     private void Awake() => Instance = this;
@@ -38,6 +46,13 @@ public class UIManager : MonoBehaviour
             GameManager.Instance.OnMoneyChanged += UpdateMoneyDisplay;
             UpdateMoneyDisplay(GameManager.Instance.PlayerMoney);
         }
+
+        if (speedBoostSlider != null) speedBoostSlider.gameObject.SetActive(false);
+        if (speedBoostTimerText != null) speedBoostTimerText.gameObject.SetActive(false);
+        if (incomeBoostSlider != null) incomeBoostSlider.gameObject.SetActive(false);
+        if (incomeBoostTimerText != null) incomeBoostTimerText.gameObject.SetActive(false);
+        if (adBoostSlider != null) adBoostSlider.gameObject.SetActive(false);
+        if (adBoostTimerText != null) adBoostTimerText.gameObject.SetActive(false);
     }
 
     private void OnDestroy()
@@ -123,5 +138,65 @@ public class UIManager : MonoBehaviour
     public void TriggerActiveAddNewTree()
     {
         if (UpgradeManager.Instance != null) UpgradeManager.Instance.AddNewTree();
+    }
+
+    public void UpdateSpeedBoostSlider(float remainingTime, float duration)
+    {
+        float fill = duration > 0f ? Mathf.Clamp01(remainingTime / duration) : 0f;
+        bool active = remainingTime > 0f;
+
+        if (speedBoostSlider != null)
+        {
+            speedBoostSlider.gameObject.SetActive(active);
+            speedBoostSlider.minValue = 0f;
+            speedBoostSlider.maxValue = 1f;
+            speedBoostSlider.value = fill;
+        }
+
+        if (speedBoostTimerText != null)
+        {
+            speedBoostTimerText.gameObject.SetActive(active);
+            speedBoostTimerText.text = active ? $"{Mathf.CeilToInt(remainingTime)}s" : "";
+        }
+    }
+
+    public void UpdateIncomeBoostSlider(float remainingTime, float duration)
+    {
+        float fill = duration > 0f ? Mathf.Clamp01(remainingTime / duration) : 0f;
+        bool active = remainingTime > 0f;
+
+        if (incomeBoostSlider != null)
+        {
+            incomeBoostSlider.gameObject.SetActive(active);
+            incomeBoostSlider.minValue = 0f;
+            incomeBoostSlider.maxValue = 1f;
+            incomeBoostSlider.value = fill;
+        }
+
+        if (incomeBoostTimerText != null)
+        {
+            incomeBoostTimerText.gameObject.SetActive(active);
+            incomeBoostTimerText.text = active ? $"{Mathf.CeilToInt(remainingTime)}s" : "";
+        }
+    }
+
+    public void UpdateAdBoostSlider(float remainingTime, float duration, string label = "")
+    {
+        float fill = duration > 0f ? Mathf.Clamp01(remainingTime / duration) : 0f;
+        bool active = remainingTime > 0f;
+
+        if (adBoostSlider != null)
+        {
+            adBoostSlider.gameObject.SetActive(active);
+            adBoostSlider.minValue = 0f;
+            adBoostSlider.maxValue = 1f;
+            adBoostSlider.value = fill;
+        }
+
+        if (adBoostTimerText != null)
+        {
+            adBoostTimerText.gameObject.SetActive(active);
+            adBoostTimerText.text = active ? $"{label} {Mathf.CeilToInt(remainingTime)}s".Trim() : "";
+        }
     }
 }

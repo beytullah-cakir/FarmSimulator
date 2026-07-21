@@ -22,7 +22,8 @@ public class CustomerController : MonoBehaviour
     private Vector3 targetDestination;
     private CustomerState currentState = CustomerState.Deactive;
     private System.Action onArrivalCallback;
-    private readonly int runHash = Animator.StringToHash("Run");
+    private readonly int walkHash = Animator.StringToHash("Walking");
+    private readonly int runHash = Animator.StringToHash("Running");
 
     private void Awake()
     {
@@ -91,7 +92,11 @@ public class CustomerController : MonoBehaviour
 
     private void SetWalkingAnimation(bool isWalking)
     {
-        if (animator != null) animator.SetBool(runHash, isWalking);
+        if (animator != null)
+        {
+            animator.SetBool(walkHash, isWalking);
+            animator.SetBool(runHash, false);
+        }
     }
 
     public void ShowRequestUI()

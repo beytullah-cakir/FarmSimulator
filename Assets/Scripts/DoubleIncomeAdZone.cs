@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 /// <summary>
 /// Reklam izlenince musterilerden alinan geliri gecici olarak 2 katina cikartir.
@@ -8,6 +8,8 @@ public class DoubleIncomeAdZone : BaseAdZone
     [Header("Double Income")]
     [SerializeField] private float incomeMultiplier = 2f;
     [SerializeField] private float boostDuration    = 60f; // Sn cinsinden sure
+
+    public override float GetBoostDuration() => boostDuration;
 
     protected override void GrantReward()
     {
