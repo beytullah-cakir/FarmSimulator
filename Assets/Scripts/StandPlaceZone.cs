@@ -20,7 +20,7 @@ public class StandPlaceZone : MonoBehaviour
 
             if (activeInventory != null && activeInventory.CurrentCarryCount > 0)
             {
-                if (standInventory != null && standInventory.CurrentCount < standInventory.MaxCapacity)
+                if (standInventory != null && standInventory.CanStoreMore())
                 {
                     return true;
                 }
@@ -66,7 +66,9 @@ public class StandPlaceZone : MonoBehaviour
     {
         while (activeInventory != null)
         {
-            int currentSpaceAvailable = standInventory.MaxCapacity - standInventory.CurrentCount - reservedPlaceCount;
+            int currentSpaceAvailable = (standInventory != null && standInventory.UnlimitedCapacity) 
+                ? int.MaxValue 
+                : (standInventory.MaxCapacity - standInventory.CurrentCount - reservedPlaceCount);
 
             if (activeInventory.CarriedItems.Count > 0 && currentSpaceAvailable > 0)
             {

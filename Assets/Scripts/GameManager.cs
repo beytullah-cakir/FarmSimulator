@@ -28,6 +28,41 @@ public class GameManager : MonoBehaviour
 
     public event System.Action<int> OnMoneyChanged;
 
+    // ─── Durdurma (Pause) Sistemi ─────────────────────────────────────────────
+    public bool IsPaused { get; private set; } = false;
+
+    /// <summary>
+    /// Oyunu durdurur veya devam ettirir. Buton onClick olayina baglanabilir.
+    /// </summary>
+    public void TogglePauseGame()
+    {
+        SetPauseState(!IsPaused);
+    }
+
+    /// <summary>
+    /// Oyunu durdurur (Time.timeScale = 0).
+    /// </summary>
+    public void PauseGame()
+    {
+        SetPauseState(true);
+    }
+
+    /// <summary>
+    /// Oyunu devam ettirir (Time.timeScale = 1).
+    /// </summary>
+    public void ResumeGame()
+    {
+        SetPauseState(false);
+    }
+
+    public void SetPauseState(bool pause)
+    {
+        IsPaused = pause;
+        Time.timeScale = pause ? 0f : 1f;
+        Debug.Log($"[GameManager] Oyun {(pause ? "durduruldu" : "devam ettiriliyor")}.");
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     private void Awake() => Instance = this;
 
     public void AddMoney(int amount)

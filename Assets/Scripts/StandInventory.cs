@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class StandInventory : MonoBehaviour
 {
+    [SerializeField] private bool unlimitedCapacity = true;
     [SerializeField] private int maxCapacity = 50;
     [SerializeField] private List<StandItem> storedItems = new List<StandItem>();
 
@@ -30,7 +31,8 @@ public class StandInventory : MonoBehaviour
 
     public StandPlaceZone PlaceZone { get; set; }
 
-    public int MaxCapacity => maxCapacity;
+    public bool UnlimitedCapacity => unlimitedCapacity;
+    public int MaxCapacity => unlimitedCapacity ? int.MaxValue : maxCapacity;
     public List<StandItem> StoredItems => storedItems;
 
     public int CurrentCount
@@ -43,7 +45,7 @@ public class StandInventory : MonoBehaviour
         }
     }
 
-    public bool CanStoreMore() => CurrentCount < maxCapacity;
+    public bool CanStoreMore() => unlimitedCapacity || CurrentCount < maxCapacity;
 
     private void Start()
     {
@@ -69,7 +71,7 @@ public class StandInventory : MonoBehaviour
     {
         if (amount <= 0 || fruit == null) return 0;
 
-        int amountToAdd = Mathf.Min(amount, Mathf.Max(0, maxCapacity - CurrentCount));
+        int amountToAdd = unlimitedCapacity ? amount : Mathf.Min(amount, Mathf.Max(0, maxCapacity - CurrentCount));
         if (amountToAdd <= 0) return 0;
 
         StandItem existingItem = storedItems.Find(item => item.fruit == fruit);
